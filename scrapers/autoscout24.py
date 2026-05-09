@@ -1,17 +1,14 @@
 # =============================================================
 # scrapers/autoscout24.py — Scraper Autoscout24
-# Autoscout24 expose une API JSON quasi-publique
-# Couvre France + Belgique + Allemagne proches frontière
+# Couverture France + Belgique
 # =============================================================
 
-import httpx
-from config import CRITERES
+import httpx, re
 
 SOURCE_ID  = "autoscout24"
 SOURCE_NOM = "Autoscout24"
-FIABILITE  = 6   # variable selon vendeur
+FIABILITE  = 6
 
-# API Autoscout24 (documentée dans leur app mobile)
 API_BASE = "https://www.autoscout24.fr/lst/mercedes-benz/c-300"
 
 HEADERS = {
@@ -22,61 +19,46 @@ HEADERS = {
 }
 
 
-def _construire_params() -> dict:
+def _construire_params(criteres: dict, page: int = 1) -> dict:
     return {
-        "atype"   : "C",                    # voitures
-        "body"    : "8",                    # break (estate)
-        "fuel"    : "H",                    # hybride
-        "fregfrom": CRITERES["annee_min"],
-        "priceto" : CRITERES["budget_max"],
-        "kmto"    : CRITERES["km_max"],
-        "cy"      : "F",                    # France
-        "ustate"  : "U",                    # occasion
+        "atype"   : "C",
+        "body"    : "8",
+        "fuel"    : "H",
+        "fregfrom": criteres.get("annee_min", 2023),
+        "priceto" : criteres.get("budget_max", 42000),
+        "kmto"    : criteres.get("km_max", 65000),
+        "cy"      : "F",
+        "ustate"  : "U",
         "size"    : 20,
-        "page"    : 1,
+        "page"    : page,
         "sort"    : "price",
         "desc"    : 0,
     }
 
 
 def _normaliser_annonce(item: dict) -> dict:
-    """Normalise une annonce Autoscout24 au format standard."""
+    annee_str = item.get("firstRegistration", "")[:4]
+    annee     = int(annee_str) if annee_str.isdigit() else None
+    km        = item.get("mileage")
+    titre     = f"C300e Break {annee or '?'} · {km or '?'} km"
 
-    # Titre
-    annee = item.get("firstRegistration", "")[:4] if item.get("firstRegistration") else None
-    km    = item.get("mileage")
-    titre = f"C300e Break {annee or '?'} · {km or '?'} km"
+    seller    = item.get("seller", {})
+    loc       = seller.get("location", {})
+    ville     = loc.get("city", "")
+    cp        = str(loc.get("zip", ""))[:2]
+    vendeur   = f"{seller.get('name', 'Pro')} ({ville} {cp})".strip()
 
-    # Vendeur
-    seller = item.get("seller", {})
-    vendeur_nom = seller.get("name", "Pro Autoscout24")
-    vendeur_loc = seller.get("location", {})
-    ville = vendeur_loc.get("city", "")
-    cp    = vendeur_loc.get("zip", "")[:2] if vendeur_loc.get("zip") else ""
-    vendeur = f"{vendeur_nom} ({ville} {cp})".strip()
+    equips    = [str(e).lower() for e in item.get("highlights", [])]
+    toit      = any("panoram" in e or "toit" in e or "sunroof" in e for e in equips) if equips else None
 
-    # Équipements
-    equipements = [str(e).lower() for e in item.get("highlights", [])]
-    toit = any("panoram" in e or "toit" in e or "dach" in e or "sunroof" in e
-               for e in equipements)
-
-    # URL
-    ad_id = item.get("id", "")
-    url   = f"https://www.autoscout24.fr/annonces/mercedes-benz-classe-c-{ad_id}"
-
-    # Prix
     prix_data = item.get("prices", {}).get("public", {})
-    prix = prix_data.get("priceRaw") or item.get("price")
+    prix      = prix_data.get("priceRaw") or item.get("price")
 
-    # Garantie (Autoscout24 ne le garantit pas — on met None)
-    garantie = None
-    description = str(item.get("description", "")).lower()
-    if "garantie" in description or "guarantee" in description:
-        # Essayer d'extraire le nombre de mois
-        import re
-        m = re.search(r"garantie\s+(\d+)\s*mois", description)
-        if m:
-            garantie = int(m.group(1))
+    garantie  = None
+    desc      = str(item.get("description", "")).lower()
+    m         = re.search(r"garantie\s+(\d+)\s*mois", desc)
+    if m:
+        garantie = int(m.group(1))
 
     return {
         "source"              : SOURCE_NOM,
@@ -84,74 +66,53 @@ def _normaliser_annonce(item: dict) -> dict:
         "fiabilite_source"    : FIABILITE,
         "titre"               : titre,
         "vendeur"             : vendeur,
-        "url"                 : url,
+        "url"                 : f"https://www.autoscout24.fr/annonces/mercedes-benz-classe-c-{item.get('id','')}",
         "prix"                : prix,
-        "annee"               : int(annee) if annee and annee.isdigit() else None,
+        "annee"               : annee,
         "km"                  : km,
-        "puissance_ch"        : item.get("specification", {}).get("power"),
-        "toit_ouvrant"        : toit if equipements else None,
+        "toit_ouvrant"        : toit,
         "garantie_mois"       : garantie,
         "premiere_main"       : item.get("previousOwners") == 1,
         "entretien_constructeur": None,
-        "couleur"             : item.get("colour"),
-        "finition"            : item.get("version"),
-        "source_raw"          : item,
     }
 
 
-def _est_eligible(annonce: dict) -> bool:
-    if annonce.get("annee") and annonce["annee"] < CRITERES["annee_min"]:
+def _est_eligible(annonce: dict, criteres: dict) -> bool:
+    if annonce.get("annee") and annonce["annee"] < criteres.get("annee_min", 2023):
         return False
-    if annonce.get("km") and annonce["km"] > CRITERES["km_max"]:
+    if annonce.get("km") and annonce["km"] > criteres.get("km_max", 65000):
         return False
-    if annonce.get("prix") and annonce["prix"] > CRITERES["budget_max"]:
+    if annonce.get("prix") and annonce["prix"] > criteres.get("budget_max", 42000):
         return False
     return True
 
 
-def scraper() -> list:
+def scraper(modele: dict = None) -> list:
+    criteres = modele.get("criteres", {}) if modele else {}
     annonces = []
-    params   = _construire_params()
-    page     = 1
-
     try:
         with httpx.Client(timeout=20, follow_redirects=True) as client:
-            while True:
-                params["page"] = page
-                resp = client.get(API_BASE, params=params, headers=HEADERS)
+            for page in range(1, 4):
+                resp = client.get(API_BASE, params=_construire_params(criteres, page), headers=HEADERS)
                 resp.raise_for_status()
-
-                # Autoscout24 retourne parfois HTML, parfois JSON selon l'Accept
                 try:
                     data  = resp.json()
                     items = data.get("listings", data.get("results", []))
                 except Exception:
-                    # Fallback HTML parsing si JSON non dispo
-                    print(f"  ℹ️  Autoscout24 — Réponse non-JSON page {page}, arrêt pagination")
                     break
-
                 if not items:
                     break
-
                 for item in items:
                     try:
-                        annonce = _normaliser_annonce(item)
-                        if _est_eligible(annonce):
-                            annonces.append(annonce)
+                        a = _normaliser_annonce(item)
+                        if _est_eligible(a, criteres):
+                            annonces.append(a)
                     except Exception as e:
-                        print(f"  ⚠️  Autoscout24 — Erreur normalisation : {e}")
-
-                # Pagination — max 3 pages pour éviter le rate limiting
+                        print(f"  ⚠️  Autoscout24 normalisation : {e}")
                 total = data.get("totalCount", 0)
-                if page * params["size"] >= total or page >= 3:
+                if page * 20 >= total:
                     break
-                page += 1
-
-        print(f"✅ Autoscout24 — {len(annonces)} annonces éligibles trouvées")
-
-    except httpx.HTTPStatusError as e:
-        print(f"❌ Autoscout24 — Erreur HTTP {e.response.status_code}")
+        print(f"✅ Autoscout24 — {len(annonces)} annonces éligibles")
     except Exception as e:
-        print(f"❌ Autoscout24 — Erreur : {e}")
-
+        print(f"❌ Autoscout24 — {e}")
     return annonces
