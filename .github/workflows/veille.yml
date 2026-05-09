@@ -2,12 +2,8 @@ name: 🚗 car-watch — Veille automatique
 
 on:
   schedule:
-    # Veille quotidienne — 8h00 Paris (UTC+2 été = 6h UTC)
     - cron: '0 6 * * *'
-    # Digest hebdomadaire — lundi 7h30 Paris (5h30 UTC)
     - cron: '30 5 * * 1'
-
-  # Lancement manuel depuis l'interface GitHub Actions
   workflow_dispatch:
     inputs:
       mode:
@@ -15,7 +11,7 @@ on:
         required: false
         default: 'normal'
       modele:
-        description: 'ID modèle spécifique (ex: mercedes_c300e) — optionnel'
+        description: 'ID modèle spécifique'
         required: false
         default: ''
 
@@ -24,7 +20,6 @@ jobs:
     name: Veille marché automobile
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
@@ -38,6 +33,13 @@ jobs:
 
       - name: 📦 Dépendances
         run: pip install -r requirements.txt
+
+      - name: 🔎 Debug fichiers
+        run: |
+          echo "=== autohero.py ligne 1-10 ==="
+          head -10 scrapers/autohero.py
+          echo "=== git log ==="
+          git log --oneline -3
 
       - name: 🔍 Veille quotidienne
         if: github.event.schedule == '0 6 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'normal')
