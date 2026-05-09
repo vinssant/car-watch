@@ -25,6 +25,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          fetch-depth: 0
 
       - name: 🐍 Python 3.11
         uses: actions/setup-python@v5
@@ -34,12 +36,18 @@ jobs:
       - name: 📦 Dépendances
         run: pip install -r requirements.txt
 
-      - name: 🔎 Debug fichiers
+      - name: 🔎 Debug
         run: |
-          echo "=== autohero.py ligne 1-10 ==="
-          head -10 scrapers/autohero.py
-          echo "=== git log ==="
-          git log --oneline -3
+          echo "=== commit ==="
+          git log --oneline -1
+          echo "=== autohero.py ==="
+          cat scrapers/autohero.py
+
+      - name: 🧪 Mode test
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'test'
+        env:
+          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        run: python3 main.py --test
 
       - name: 🔍 Veille quotidienne
         if: github.event.schedule == '0 6 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'normal')
@@ -52,18 +60,6 @@ jobs:
         env:
           GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
         run: python3 main.py --digest
-
-      - name: 🧪 Mode test
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'test'
-        env:
-          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
-        run: python3 main.py --test
-
-      - name: 🎯 Modèle spécifique
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'modele' && github.event.inputs.modele != ''
-        env:
-          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
-        run: python3 main.py --modele ${{ github.event.inputs.modele }}
 
       - name: 💾 Commit historique
         uses: stefanzweifel/git-auto-commit-action@v5
