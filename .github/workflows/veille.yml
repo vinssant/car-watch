@@ -1,0 +1,72 @@
+name: 🚗 car-watch — Veille automatique
+
+on:
+  schedule:
+    # Veille quotidienne — 8h00 Paris (UTC+2 été = 6h UTC)
+    - cron: '0 6 * * *'
+    # Digest hebdomadaire — lundi 7h30 Paris (5h30 UTC)
+    - cron: '30 5 * * 1'
+
+  # Lancement manuel depuis l'interface GitHub Actions
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Mode : normal | test | digest | modele'
+        required: false
+        default: 'normal'
+      modele:
+        description: 'ID modèle spécifique (ex: mercedes_c300e) — optionnel'
+        required: false
+        default: ''
+
+jobs:
+  car-watch:
+    name: Veille marché automobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Dépendances
+        run: pip install -r requirements.txt
+
+      - name: 🔍 Veille quotidienne
+        if: github.event.schedule == '0 6 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'normal')
+        env:
+          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        run: python3 main.py
+
+      - name: 📊 Digest hebdomadaire
+        if: github.event.schedule == '30 5 * * 1' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'digest')
+        env:
+          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        run: python3 main.py --digest
+
+      - name: 🧪 Mode test
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'test'
+        env:
+          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        run: python3 main.py --test
+
+      - name: 🎯 Modèle spécifique
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'modele' && github.event.inputs.modele != ''
+        env:
+          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        run: python3 main.py --modele ${{ github.event.inputs.modele }}
+
+      - name: 💾 Commit historique
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "📊 car-watch — historique $(date +'%d/%m/%Y %H:%M')"
+          file_pattern: "data/**/*.json"
+          commit_author: "car-watch bot <bot@github.com>"

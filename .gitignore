@@ -1,0 +1,24 @@
+# Secrets — NE JAMAIS committer
+credentials.json
+token.json
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Reports générés localement
+reports/*.html
+reports/*.pdf
