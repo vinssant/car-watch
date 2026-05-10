@@ -21,21 +21,20 @@ from core.mailer       import envoyer_email
 
 # Import scrapers génériques
 from scrapers import autohero, aramisauto, autoscout24
+from scrapers import spoticar, mercedes_certified, elite_auto, lacentrale, capcar
 
 
 # ── Mapping scraper → fonction ────────────────────────────────
 SCRAPERS_DISPONIBLES = {
-    "autohero"   : autohero.scraper,
-    "aramisauto" : aramisauto.scraper,
-    "autoscout24": autoscout24.scraper,
+    "autohero"          : autohero.scraper,
+    "aramisauto"        : aramisauto.scraper,
+    "autoscout24"       : autoscout24.scraper,
+    "spoticar"          : spoticar.scraper,
+    "mercedes_certified": mercedes_certified.scraper,
+    "elite_auto"        : elite_auto.scraper,
+    "lacentrale"        : lacentrale.scraper,
+    "capcar"            : capcar.scraper,
     # À décommenter au fur et à mesure :
-    # "spoticar"          : spoticar.scraper,
-    # "mercedes_certified": mercedes_certified.scraper,
-    # "transakauto"       : transakauto.scraper,
-    # "elite_auto"        : elite_auto.scraper,
-    # "capcar"            : capcar.scraper,
-    # "lacentrale"        : lacentrale.scraper,
-    # "leboncoin"         : leboncoin.scraper,
 }
 
 
