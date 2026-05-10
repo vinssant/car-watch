@@ -6,9 +6,13 @@
 # URL détail : /voiture-occasion/mercedes-classe-c-break-c-300-e-{holderId}.html
 # =============================================================
 
-import httpx
 import re
-from bs4 import BeautifulSoup
+import urllib.request
+try:
+    from bs4 import BeautifulSoup
+    HAS_BS4 = True
+except ImportError:
+    HAS_BS4 = False
 
 SOURCE_ID  = "leparking"
 SOURCE_NOM = "Le Parking"
@@ -18,15 +22,19 @@ BASE_URL   = "https://www.leparking.fr"
 SEARCH_URL = f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e.html"
 
 HEADERS = {
-    "User-Agent"     : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
-    "Accept"         : "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-    "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-    "Accept-Encoding": "gzip, deflate, br",
-    "Connection"     : "keep-alive",
+    "User-Agent"             : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "Accept"                 : "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language"        : "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Accept-Encoding"        : "gzip, deflate, br",
+    "Cache-Control"          : "max-age=0",
+    "Sec-Fetch-Dest"         : "document",
+    "Sec-Fetch-Mode"         : "navigate",
+    "Sec-Fetch-Site"         : "none",
+    "Sec-Fetch-User"         : "?1",
     "Upgrade-Insecure-Requests": "1",
-    "Sec-Fetch-Dest" : "document",
-    "Sec-Fetch-Mode" : "navigate",
-    "Sec-Fetch-Site" : "none",
+    "sec-ch-ua"              : '"Google Chrome";v="147", "Chromium";v="147", "Not=A?Brand";v="24"',
+    "sec-ch-ua-mobile"       : "?0",
+    "sec-ch-ua-platform"     : '"Windows"',
 }
 
 REGIONS_PRIORITAIRES = [
@@ -76,9 +84,16 @@ def _extraire_annonces(html: str, criteres: dict) -> list:
                 continue
 
             # Année — chercher toutes les années et prendre la plus récente < 2027
-            annees = [int(a) for a in re.findall(r"\b(20[12][0-9])\b", texte)]
-            annees_valides = [a for a in annees if 2019 <= a <= 2026]
-            annee = max(annees_valides) if annees_valides else None
+            annee = None
+            # Chercher "Année XXXX" en priorité (millésime réel)
+            annee_label = re.search(r"Ann[eé]+e?\s*[:\-]?\s*(20[12][0-9])", texte, re.IGNORECASE)
+            if annee_label:
+                annee = int(annee_label.group(1))
+            if not annee:
+                # Fallback : toutes les années dans le texte sauf 2025/2026 (dates publication)
+                toutes = [int(a) for a in re.findall(r"\b(20[12][0-9])\b", texte)]
+                valides = [a for a in toutes if 2019 <= a <= 2025]
+                annee = max(valides) if valides else None
             if annee and annee < annee_min:
                 continue
 
@@ -153,21 +168,27 @@ def scraper(modele: dict = None) -> list:
     annonces = []
 
     try:
-        with httpx.Client(
-            timeout=30,
-            follow_redirects=True,
-            headers=HEADERS,
-        ) as client:
-            resp = client.get(SEARCH_URL)
-
-            if resp.status_code == 403:
-                print(f"  ⚠️  Le Parking — 403 (IP datacenter bloquée). Ce scraper doit tourner depuis le NAS.")
+        req = urllib.request.Request(SEARCH_URL, headers=HEADERS)
+        try:
+            resp = urllib.request.urlopen(req, timeout=30)
+            raw = resp.read()
+            # Décoder gzip si nécessaire
+            if resp.info().get("Content-Encoding") == "gzip":
+                import gzip as gzip_mod
+                html = gzip_mod.decompress(raw).decode("utf-8", errors="ignore")
+            else:
+                html = raw.decode("utf-8", errors="ignore")
+        except urllib.error.HTTPError as http_err:
+            if http_err.code == 403:
+                print(f"  ⚠️  Le Parking — 403. Vérifier les headers User-Agent.")
                 return []
+            raise
 
-            resp.raise_for_status()
-            html = resp.text
-
-        raw = _extraire_annonces(html, criteres)
+        if HAS_BS4:
+            raw = _extraire_annonces(html, criteres)
+        else:
+            print(f"  ℹ️  Le Parking — BeautifulSoup absent, parsing regex")
+            raw = _extraire_annonces_regex(html, criteres)
         annonces = [a for a in raw if _est_eligible(a, criteres)]
 
         # Dédupliquer par holder_id
