@@ -88,5 +88,63 @@
     "km": 61964,
     "titre": "C300e Break AMG LINE 2024 · 61 964 km",
     "source": "Le Parking"
+  },
+  {
+    "id": "b7eddca36b66",
+    "date": "2026-05-10T14:58:49.971282",
+    "event": "DISPARITION",
+    "titre": "C300e Break AMG LINE 2025 · 58 771 km",
+    "prix": 37990
+  },
+  {
+    "id": "111bb30dedd5",
+    "date": "2026-05-10T14:58:49.971282",
+    "event": "DISPARITION",
+    "titre": "C300e Break AMG LINE 2025 · 56 880 km",
+    "prix": 39490
+  },
+  {
+    "id": "9c2ebe742a10",
+    "date": "2026-05-10T14:58:49.971282",
+    "event": "DISPARITION",
+    "titre": "C300e Break AMG LINE 2025 · 60 032 km",
+    "prix": 41999
+  },
+  {
+    "id": "86b819398512",
+    "date": "2026-05-10T14:58:49.971282",
+    "event": "DISPARITION",
+    "titre": "C300e Break AMG LINE 2024 · 52 012 km",
+    "prix": 39990
+  },
+  {
+    "id": "ca501ddbc4e4",
+    "date": "2026-05-10T14:58:49.971282",
+    "event": "DISPARITION",
+    "titre": "C300e Break AMG LINE 2024 · 54 611 km",
+    "prix": 39750
+  },
+  {
+    "id": "f17033f1866f",
+    "date": "2026-05-10T14:58:49.971282",
+    "event": "DISPARITION",
+    "titre": "C300e Break 39 2024 · 54 611 km",
+    "prix": 39750
+  },
+  {
+    "id": "d24af87d238f",
+    "date": "2026-05-10T14:58:49.971282",
+    "event": "DISPARITION",
+    "titre": "C300e Break AMG LINE 2024 · 61 964 km",
+    "prix": 41900
+  },
+  {
+    "id": "86b819398512",
+    "date": "2026-05-10T15:07:27.021600",
+    "event": "APPARITION",
+    "prix": 39990,
+    "km": 52012,
+    "titre": "C300e Break AMG LINE 2024 · 52 012 km",
+    "source": "Le Parking"
   }
 ]
