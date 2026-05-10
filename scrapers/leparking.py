@@ -157,6 +157,23 @@ def _est_eligible(annonce: dict, criteres: dict) -> bool:
     return True
 
 
+
+def _fetch_annee_detail(holder_id, headers):
+    """Récupère l année réelle sur la page détail de l annonce."""
+    import time
+    url = f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e-{holder_id}.html"
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        resp = urllib.request.urlopen(req, timeout=10)
+        raw  = resp.read()
+        import gzip as gz
+        html = gz.decompress(raw).decode("utf-8", errors="ignore") if resp.info().get("Content-Encoding") == "gzip" else raw.decode("utf-8", errors="ignore")
+        m = re.search(r'Ann[eé]+e?\s*[:\-]?\s*(20[12][0-9])', html, re.IGNORECASE)
+        time.sleep(0.3)  # politesse
+        return int(m.group(1)) if m else None
+    except Exception:
+        return None
+
 def scraper(modele: dict = None) -> list:
     """
     Scrape Le Parking pour les C300e Break.
@@ -189,6 +206,21 @@ def scraper(modele: dict = None) -> list:
         else:
             print(f"  ℹ️  Le Parking — BeautifulSoup absent, parsing regex")
             raw = _extraire_annonces_regex(html, criteres)
+
+        # Enrichir avec l'année réelle depuis la page détail
+        enrichies = []
+        for a in raw:
+            hid = a.get("holder_id", "")
+            if hid:
+                annee_reelle = _fetch_annee_detail(hid, HEADERS)
+                if annee_reelle:
+                    a["annee"] = annee_reelle
+                    # Rejeter si hors critère annee
+                    annee_min = criteres.get("annee_min", 2023)
+                    if annee_reelle < annee_min:
+                        continue
+            enrichies.append(a)
+        raw = enrichies
         annonces = [a for a in raw if _est_eligible(a, criteres)]
 
         # Dédupliquer par holder_id
