@@ -22,6 +22,7 @@ from core.mailer       import envoyer_email
 # Import scrapers génériques
 from scrapers import autohero, aramisauto, autoscout24
 from scrapers import spoticar, mercedes_certified, elite_auto, lacentrale, capcar
+from scrapers import autouncle
 
 
 # ── Mapping scraper → fonction ────────────────────────────────
@@ -34,6 +35,7 @@ SCRAPERS_DISPONIBLES = {
     "elite_auto"        : elite_auto.scraper,
     "lacentrale"        : lacentrale.scraper,
     "capcar"            : capcar.scraper,
+    "autouncle"         : autouncle.scraper,
     # À décommenter au fur et à mesure :
 }
 
