@@ -24,7 +24,6 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           ref: main
           fetch-depth: 0
 
@@ -45,19 +44,16 @@ jobs:
 
       - name: 🧪 Mode test
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'test'
-        env:
           GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
         run: python3 main.py --test
 
       - name: 🔍 Veille quotidienne
         if: github.event.schedule == '0 6 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'normal')
-        env:
           GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
         run: python3 main.py
 
       - name: 📊 Digest hebdomadaire
         if: github.event.schedule == '30 5 * * 1' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'digest')
-        env:
           GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
         run: python3 main.py --digest
 
@@ -67,6 +63,3 @@ jobs:
           commit_message: "📊 car-watch — historique $(date +'%d/%m/%Y %H:%M')"
           file_pattern: "data/**/*.json"
           commit_author: "car-watch bot <bot@github.com>"
-          token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
