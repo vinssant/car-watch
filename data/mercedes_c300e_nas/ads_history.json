@@ -1,0 +1,29 @@
+[
+  {
+    "id": "e7504c3ecc63",
+    "date": "2026-05-10T11:22:44.745478",
+    "event": "APPARITION",
+    "prix": 41990,
+    "km": 19309,
+    "titre": "C300e Break ? · 19 309 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "312e5ebbf5f6",
+    "date": "2026-05-10T11:22:44.745478",
+    "event": "APPARITION",
+    "prix": 39990,
+    "km": 24100,
+    "titre": "C300e Break ? · 24 100 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "6bb469d574b2",
+    "date": "2026-05-10T11:22:44.745478",
+    "event": "APPARITION",
+    "prix": 39390,
+    "km": 45000,
+    "titre": "C300e Break ? · 45 000 km",
+    "source": "Autoscout24"
+  }
+]
