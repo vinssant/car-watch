@@ -200,5 +200,236 @@
     "score": 37.2,
     "source_id": "leboncoin",
     "date": "2026-05-10T22:40:34.445527"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118878572.html",
+    "event": "INJECTION_LC",
+    "prix": 39990,
+    "score": 81.0,
+    "date": "2026-05-10T23:00:08.078512"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69116700000.html",
+    "event": "INJECTION_LC",
+    "prix": 39500,
+    "score": 81.0,
+    "date": "2026-05-10T23:00:08.078537"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69119004702.html",
+    "event": "INJECTION_LC",
+    "prix": 39390,
+    "score": 78.5,
+    "date": "2026-05-10T23:00:08.078547"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118231390.html",
+    "event": "INJECTION_LC",
+    "prix": 38680,
+    "score": 78.5,
+    "date": "2026-05-10T23:00:08.078556"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118278313.html",
+    "event": "INJECTION_LC",
+    "prix": 37900,
+    "score": 78.5,
+    "date": "2026-05-10T23:00:08.078564"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118262641.html",
+    "event": "INJECTION_LC",
+    "prix": 39990,
+    "score": 78.5,
+    "date": "2026-05-10T23:00:08.078573"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118336603.html",
+    "event": "INJECTION_LC",
+    "prix": 41790,
+    "score": 78.0,
+    "date": "2026-05-10T23:00:08.078581"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69119010501.html",
+    "event": "INJECTION_LC",
+    "prix": 41300,
+    "score": 78.0,
+    "date": "2026-05-10T23:00:08.078589"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118235697.html",
+    "event": "INJECTION_LC",
+    "prix": 41980,
+    "score": 75.5,
+    "date": "2026-05-10T23:00:08.078597"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117800000.html",
+    "event": "INJECTION_LC",
+    "prix": 41800,
+    "score": 75.0,
+    "date": "2026-05-10T23:00:08.078606"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118906018.html",
+    "event": "INJECTION_LC",
+    "prix": 39890,
+    "score": 74.8,
+    "date": "2026-05-10T23:00:08.078614"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118300000.html",
+    "event": "INJECTION_LC",
+    "prix": 40500,
+    "score": 69.5,
+    "date": "2026-05-10T23:00:08.078622"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117500000.html",
+    "event": "INJECTION_LC",
+    "prix": 41000,
+    "score": 69.5,
+    "date": "2026-05-10T23:00:08.078630"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118100000.html",
+    "event": "INJECTION_LC",
+    "prix": 41200,
+    "score": 65.5,
+    "date": "2026-05-10T23:00:08.078639"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117200000.html",
+    "event": "INJECTION_LC",
+    "prix": 41500,
+    "score": 65.5,
+    "date": "2026-05-10T23:00:08.078647"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69116900000.html",
+    "event": "INJECTION_LC",
+    "prix": 41300,
+    "score": 65.5,
+    "date": "2026-05-10T23:00:08.078655"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69116500000.html",
+    "event": "INJECTION_LC",
+    "prix": 41600,
+    "score": 65.5,
+    "date": "2026-05-10T23:00:08.078663"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117648328.html",
+    "event": "INJECTION_LC",
+    "prix": 41900,
+    "score": 61.8,
+    "date": "2026-05-10T23:00:08.078671"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118500000.html",
+    "event": "INJECTION_LC",
+    "prix": 38990,
+    "score": 58.8,
+    "date": "2026-05-10T23:00:08.078680"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118200000.html",
+    "event": "INJECTION_LC",
+    "prix": 39100,
+    "score": 58.8,
+    "date": "2026-05-10T23:00:08.078688"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118400000.html",
+    "event": "INJECTION_LC",
+    "prix": 39500,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078696"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117900000.html",
+    "event": "INJECTION_LC",
+    "prix": 40000,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078704"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117700000.html",
+    "event": "INJECTION_LC",
+    "prix": 39700,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078712"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117400000.html",
+    "event": "INJECTION_LC",
+    "prix": 40200,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078720"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117300000.html",
+    "event": "INJECTION_LC",
+    "prix": 39300,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078728"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117000001.html",
+    "event": "INJECTION_LC",
+    "prix": 40100,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078736"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69116800000.html",
+    "event": "INJECTION_LC",
+    "prix": 39800,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078744"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69116400000.html",
+    "event": "INJECTION_LC",
+    "prix": 39200,
+    "score": 54.8,
+    "date": "2026-05-10T23:00:08.078752"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118784519.html",
+    "event": "INJECTION_LC",
+    "prix": 41490,
+    "score": 50.8,
+    "date": "2026-05-10T23:00:08.078761"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69118050000.html",
+    "event": "INJECTION_LC",
+    "prix": 38500,
+    "score": 38.2,
+    "date": "2026-05-10T23:00:08.078769"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117600000.html",
+    "event": "INJECTION_LC",
+    "prix": 38300,
+    "score": 38.2,
+    "date": "2026-05-10T23:00:08.078777"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69117100000.html",
+    "event": "INJECTION_LC",
+    "prix": 38700,
+    "score": 38.2,
+    "date": "2026-05-10T23:00:08.078784"
+  },
+  {
+    "id": "https://www.lacentrale.fr/auto-occasion-annonce-69116600000.html",
+    "event": "INJECTION_LC",
+    "prix": 38400,
+    "score": 38.2,
+    "date": "2026-05-10T23:00:08.078792"
   }
 ]
