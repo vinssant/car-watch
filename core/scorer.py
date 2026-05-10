@@ -39,7 +39,7 @@ def score_kilometrage(km: int, km_ideal_max: int, km_max: int) -> float:
     return 0.0
 
 
-def score_prix(prix: float, cote: float | None) -> float:
+def score_prix(prix: float, cote: object) -> float:
     if prix is None or cote is None:
         return 0.5  # neutre si inconnu
     ratio = prix / cote
@@ -86,7 +86,7 @@ def score_source(fiabilite: int) -> float:
     return min(fiabilite / 10, 1.0)
 
 
-def _get_cote(modele: dict, annee: int, km: int) -> float | None:
+def _get_cote(modele: dict, annee: int, km: int) ->object:
     cotes     = modele.get("cotes_marche", [])
     candidats = [c for c in cotes if c.get("annee") == annee and c.get("km_max", 0) >= (km or 0)]
     if candidats:
