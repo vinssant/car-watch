@@ -32,6 +32,8 @@ SENDERS_ALERTES = {
     "alerte@leboncoin.fr"                         : "Leboncoin",
     "noreply@leboncoin.fr"                        : "Leboncoin",
     "no-reply@leboncoin.fr"                       : "Leboncoin",
+    "no.reply@leboncoin.fr"                       : "Leboncoin",
+    "info@news.leboncoin.fr"                      : "Leboncoin",
     # La Centrale — expéditeurs confirmés
     "info@mail-alerte.lacentrale.fr"              : "La Centrale",
     "no-reply@info1.lacentrale.fr"                : "La Centrale",
@@ -270,7 +272,8 @@ def scraper(modele: dict = None) -> list:
 
         # Rechercher emails d'alertes des dernières 48h
         senders_query = " OR ".join([f"from:{s}" for s in SENDERS_ALERTES.keys()])
-        query = f"({senders_query}) newer_than:2d"
+        # Aussi chercher par sujet pour capturer les alertes "Mes recherches"
+        query = f"({senders_query}) newer_than:2d subject:(alerte OR nouvelle OR annonce OR Mercedes OR C300)"
 
         result  = service.users().messages().list(userId="me", q=query, maxResults=20).execute()
         messages = result.get("messages", [])
