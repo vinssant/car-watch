@@ -1,27 +1,18 @@
 # =============================================================
-# core/scorer.py — Moteur de scoring TCO générique
-# Fonctionne avec n'importe quel modèle de modeles/
+# core/scorer.py — Moteur de scoring TCO v2
+# Corrections :
+#   - Score minimum 40 quand données inconnues
+#   - Message "None km" supprimé
+#   - Données manquantes = neutre, pas pénalisantes
 # =============================================================
 
 from datetime import datetime
 from config import SCORING_DEFAULT, SCORE_URGENT, SCORE_ALERTE, SCORE_INFO
 
 
-def _get_cote(modele: dict, annee: int, km: int) -> float | None:
-    """Retourne la cote de référence selon l'année et le km."""
-    cotes = modele.get("cotes_marche", [])
-    # Filtrer par année, puis prendre le premier km_max >= km actuel
-    candidats = [c for c in cotes if c.get("annee") == annee and c.get("km_max", 0) >= (km or 0)]
-    if candidats:
-        return min(candidats, key=lambda c: c["km_max"])["cote"]
-    # Fallback : année la plus proche
-    par_annee = sorted(cotes, key=lambda c: abs(c.get("annee", 0) - (annee or 0)))
-    return par_annee[0]["cote"] if par_annee else None
-
-
 def score_annee(annee: int, annee_min: int) -> float:
     if annee is None:
-        return 0
+        return 0.6  # neutre si inconnu
     delta = annee - annee_min
     if delta >= 2:
         return 1.0
@@ -34,7 +25,7 @@ def score_annee(annee: int, annee_min: int) -> float:
 
 def score_kilometrage(km: int, km_ideal_max: int, km_max: int) -> float:
     if km is None:
-        return 0
+        return 0.5  # neutre si inconnu (pas pénalisant)
     if km <= km_ideal_max * 0.4:
         return 1.0
     if km <= km_ideal_max * 0.6:
@@ -50,7 +41,7 @@ def score_kilometrage(km: int, km_ideal_max: int, km_max: int) -> float:
 
 def score_prix(prix: float, cote: float | None) -> float:
     if prix is None or cote is None:
-        return 0.5
+        return 0.5  # neutre si inconnu
     ratio = prix / cote
     if ratio <= 0.88:
         return 1.0
@@ -67,7 +58,7 @@ def score_prix(prix: float, cote: float | None) -> float:
 
 def score_garantie(mois: int, garantie_min: int) -> float:
     if mois is None:
-        return 0
+        return 0.4  # inconnu = neutre/légèrement pénalisant
     if mois >= 24:
         return 1.0
     if mois >= garantie_min:
@@ -78,17 +69,16 @@ def score_garantie(mois: int, garantie_min: int) -> float:
 
 
 def score_equipements(annonce: dict, equipements_cles: dict) -> float:
-    """Score les équipements clés définis dans le modèle."""
     if not equipements_cles:
         return 0.5
-    total_poids  = sum(e["poids"] for e in equipements_cles.values())
+    total_poids   = sum(e["poids"] for e in equipements_cles.values())
     poids_obtenus = 0.0
     for cle, meta in equipements_cles.items():
         val = annonce.get(cle) or annonce.get("equipements", {}).get(cle)
         if val is True:
             poids_obtenus += meta["poids"]
         elif val is None:
-            poids_obtenus += meta["poids"] * 0.3  # inconnu → malus partiel
+            poids_obtenus += meta["poids"] * 0.4  # inconnu → neutre
     return min(poids_obtenus / total_poids, 1.0) if total_poids > 0 else 0.5
 
 
@@ -96,23 +86,26 @@ def score_source(fiabilite: int) -> float:
     return min(fiabilite / 10, 1.0)
 
 
+def _get_cote(modele: dict, annee: int, km: int) -> float | None:
+    cotes     = modele.get("cotes_marche", [])
+    candidats = [c for c in cotes if c.get("annee") == annee and c.get("km_max", 0) >= (km or 0)]
+    if candidats:
+        return min(candidats, key=lambda c: c["km_max"])["cote"]
+    par_annee = sorted(cotes, key=lambda c: abs(c.get("annee", 0) - (annee or 0)))
+    return par_annee[0]["cote"] if par_annee else None
+
+
 def calculer_score(annonce: dict, modele: dict) -> dict:
-    """
-    Calcule le score TCO d'une annonce pour un modèle donné.
-    Retourne l'annonce enrichie avec score_total, score_detail,
-    niveau_alerte, recommandation.
-    """
-    criteres = modele.get("criteres", {})
-    scoring  = {**SCORING_DEFAULT, **modele.get("scoring_override", {})}
+    criteres   = modele.get("criteres", {})
+    scoring    = {**SCORING_DEFAULT, **modele.get("scoring_override", {})}
     equip_cles = modele.get("equipements_cles", {})
 
-    annee      = annonce.get("annee")
-    km         = annonce.get("km")
-    prix       = annonce.get("prix")
-    garantie   = annonce.get("garantie_mois")
-    fiabilite  = annonce.get("fiabilite_source", 5)
-
-    cote = _get_cote(modele, annee, km)
+    annee     = annonce.get("annee")
+    km        = annonce.get("km")
+    prix      = annonce.get("prix")
+    garantie  = annonce.get("garantie_mois")
+    fiabilite = annonce.get("fiabilite_source", 5)
+    cote      = _get_cote(modele, annee, km)
 
     details = {
         "annee"           : score_annee(annee, criteres.get("annee_min", 2023)),
@@ -127,7 +120,11 @@ def calculer_score(annonce: dict, modele: dict) -> dict:
 
     total = sum(details[k] * scoring.get(k, 0) for k in details)
 
-    # Niveau d'alerte
+    # Score minimum 40 si données insuffisantes (évite les 19/100 injustes)
+    donnees_manquantes = sum(1 for v in [annee, km, prix] if v is None)
+    if donnees_manquantes >= 2:
+        total = max(total, 40.0)
+
     if total >= SCORE_URGENT:
         niveau, emoji = "URGENT", "🔴"
     elif total >= SCORE_ALERTE:
@@ -153,32 +150,47 @@ def calculer_score(annonce: dict, modele: dict) -> dict:
 
 def _recommandation(annonce: dict, details: dict, modele: dict) -> str:
     equip_cles = modele.get("equipements_cles", {})
-    points = []
+    points     = []
 
-    if details["kilometrage"] >= 0.9:
-        points.append(f"✅ Kilométrage excellent ({annonce.get('km', '?')} km)")
-    if details["prix_vs_marche"] >= 0.85:
+    # Points positifs
+    if annonce.get("km") and details["kilometrage"] >= 0.9:
+        points.append(f"✅ Kilométrage excellent ({annonce['km']:,} km)".replace(",", " "))
+    if annonce.get("prix") and details["prix_vs_marche"] >= 0.85:
         points.append("✅ Prix sous la cote — opportunité")
-    if details["garantie"] >= 0.75:
-        points.append(f"✅ Garantie solide ({annonce.get('garantie_mois', '?')} mois)")
+    if annonce.get("garantie_mois") and details["garantie"] >= 0.75:
+        points.append(f"✅ Garantie solide ({annonce['garantie_mois']} mois)")
 
     for cle, meta in equip_cles.items():
         val = annonce.get(cle) or annonce.get("equipements", {}).get(cle)
         if val is True:
             points.append(f"✅ {meta['label']} confirmé")
-        elif val is None and meta.get("poids", 0) >= 0.4:
-            points.append(f"⚠️ {meta['label']} : à confirmer avant visite")
-        elif val is False and meta.get("poids", 0) >= 0.4:
+        elif val is None and meta.get("poids", 0) >= 0.5:
+            points.append(f"⚠️ {meta['label']} : à confirmer")
+        elif val is False and meta.get("poids", 0) >= 0.5:
             points.append(f"⛔ {meta['label']} absent")
 
-    if details["kilometrage"] < 0.4:
-        points.append(f"⚠️ Kilométrage élevé ({annonce.get('km', '?')} km)")
-    if details["prix_vs_marche"] < 0.4:
+    # Points négatifs — seulement si données disponibles
+    if annonce.get("km") and details["kilometrage"] < 0.4:
+        points.append(f"⚠️ Kilométrage élevé ({annonce['km']:,} km)".replace(",", " "))
+    if annonce.get("prix") and details["prix_vs_marche"] < 0.4:
         points.append("⚠️ Prix surévalué — négocier")
-    if details["garantie"] < 0.4:
+    if annonce.get("garantie_mois") and details["garantie"] < 0.4:
         points.append("⚠️ Garantie insuffisante — exiger extension 12 mois")
+    elif annonce.get("garantie_mois") is None:
+        points.append("⚠️ Garantie : à vérifier auprès du vendeur")
 
-    return " · ".join(points) if points else "Annonce standard — vérifier les détails"
+    # Si données manquantes
+    manquantes = []
+    if annonce.get("prix") is None:
+        manquantes.append("prix")
+    if annonce.get("km") is None:
+        manquantes.append("kilométrage")
+    if annonce.get("annee") is None:
+        manquantes.append("année")
+    if manquantes:
+        points.append(f"ℹ️ Données à compléter : {', '.join(manquantes)}")
+
+    return " · ".join(points) if points else "Vérifier les détails sur l'annonce"
 
 
 def trier_annonces(annonces: list) -> list:
