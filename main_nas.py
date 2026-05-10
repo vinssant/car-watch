@@ -8,6 +8,7 @@ from datetime import datetime
 
 from scrapers import leparking
 from scrapers.autoscout24_nas import scraper as autoscout24_nas_scraper
+from scrapers.gmail_parser import scraper as gmail_parser_scraper
 
 from modeles import charger_modeles_actifs
 from core.scorer       import calculer_score, trier_annonces
@@ -19,6 +20,7 @@ from config            import EMAIL_DESTINATAIRE
 SCRAPERS_NAS = {
     "leparking"       : leparking.scraper,
     "autoscout24_nas" : autoscout24_nas_scraper,
+    "gmail_parser"    : gmail_parser_scraper,
 }
 
 # Sources NAS à activer dans chaque modèle

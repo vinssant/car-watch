@@ -1,0 +1,52 @@
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/oauth2/__init__.py:38: FutureWarning: You are using a Python version 3.8 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.8"), FutureWarning)
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/auth/__init__.py:52: FutureWarning: You are using a Python version 3.8 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.8"), FutureWarning)
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/auth/crypt/es.py:21: CryptographyDeprecationWarning: Python 3.8 is no longer supported by the Python core team and support for it is deprecated in cryptography. The next release of cryptography will remove support for Python 3.8.
+  import cryptography.exceptions
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/api_core/_python_version_support.py:246: FutureWarning: You are using a non-supported Python version (3.8.15). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+
+=======================================================
+  🏠 car-watch NAS — Scrapers IP résidentielle
+  10/05/2026 à 11:26:59
+=======================================================
+  ✅ Modèle chargé : Mercedes C300e Break
+  ⏸️  Modèle inactif : skoda_superb_combi
+  ⏸️  Modèle inactif : toyota_corolla_ts
+
+🚗 Mercedes C300e Break
+  🔍 Leparking...
+  ⚠️  Le Parking — 403 (IP datacenter bloquée). Ce scraper doit tourner depuis le NAS.
+  🔍 Autoscout24 Nas...
+✅ Autoscout24 NAS — 3 annonces éligibles (5 brutes)
+  📋 Nouvelles: 0 · Baisses: 0 · Total: 3
+  ℹ️  Pas de nouveautés — email non envoyé
+
+✅ NAS terminé — 11:27:00
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/oauth2/__init__.py:38: FutureWarning: You are using a Python version 3.8 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.8"), FutureWarning)
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/auth/__init__.py:52: FutureWarning: You are using a Python version 3.8 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.8"), FutureWarning)
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/auth/crypt/es.py:21: CryptographyDeprecationWarning: Python 3.8 is no longer supported by the Python core team and support for it is deprecated in cryptography. The next release of cryptography will remove support for Python 3.8.
+  import cryptography.exceptions
+/var/services/homes/vinssant/.local/lib/python3.8/site-packages/google/api_core/_python_version_support.py:246: FutureWarning: You are using a non-supported Python version (3.8.15). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+
+=======================================================
+  🏠 car-watch NAS — Scrapers IP résidentielle
+  10/05/2026 à 11:36:32
+=======================================================
+  ✅ Modèle chargé : Mercedes C300e Break
+  ⏸️  Modèle inactif : skoda_superb_combi
+  ⏸️  Modèle inactif : toyota_corolla_ts
+
+🚗 Mercedes C300e Break
+  🔍 Leparking...
+✅ Le Parking — 7 annonces éligibles (7 brutes)
+  🔍 Autoscout24 Nas...
+✅ Autoscout24 NAS — 3 annonces éligibles (5 brutes)
+  📋 Nouvelles: 0 · Baisses: 0 · Total: 10
+  ℹ️  Pas de nouveautés — email non envoyé
+
+✅ NAS terminé — 11:36:34
