@@ -146,5 +146,59 @@
     "km": 52012,
     "titre": "C300e Break AMG LINE 2024 · 52 012 km",
     "source": "Le Parking"
+  },
+  {
+    "id": "https://www.leboncoin.fr/ad/voitures/3092724405",
+    "event": "INJECTION_MANUELLE",
+    "titre": "Mercedes-benz classe c break 300e 313h phev amg line apple carplay",
+    "prix": 39990,
+    "score": 65.5,
+    "source_id": "leboncoin",
+    "date": "2026-05-10T22:40:34.445462"
+  },
+  {
+    "id": "https://www.leboncoin.fr/ad/voitures/3147840704",
+    "event": "INJECTION_MANUELLE",
+    "titre": "MERCEDES Classe C BREAK 300 e 204+129 ch AMG LINE",
+    "prix": 38990,
+    "score": 61.4,
+    "source_id": "leboncoin",
+    "date": "2026-05-10T22:40:34.445493"
+  },
+  {
+    "id": "https://www.leboncoin.fr/ad/voitures/3163095164",
+    "event": "INJECTION_MANUELLE",
+    "titre": "Mercedes Classe C Break 300 e 9G-Tronic e-Hybrid EQ Avantgarde Line",
+    "prix": 38900,
+    "score": 61.4,
+    "source_id": "leboncoin",
+    "date": "2026-05-10T22:40:34.445502"
+  },
+  {
+    "id": "https://www.leboncoin.fr/ad/voitures/3147855663",
+    "event": "INJECTION_MANUELLE",
+    "titre": "MERCEDES Classe C V SW 300 E AMG LINE 9G-TRONIC - Suivi Mercedes",
+    "prix": 39390,
+    "score": 53.8,
+    "source_id": "leboncoin",
+    "date": "2026-05-10T22:40:34.445511"
+  },
+  {
+    "id": "https://www.leboncoin.fr/ad/voitures/3176853382",
+    "event": "INJECTION_MANUELLE",
+    "titre": "Mercedes-benz Classe C Break 300 e 204+129ch AMG Line",
+    "prix": 39750,
+    "score": 37.2,
+    "source_id": "leboncoin",
+    "date": "2026-05-10T22:40:34.445519"
+  },
+  {
+    "id": "https://www.leboncoin.fr/ad/voitures/3087183383",
+    "event": "INJECTION_MANUELLE",
+    "titre": "Mercedes Classe C break V 300 DE Avantgarde Line",
+    "prix": 40990,
+    "score": 37.2,
+    "source_id": "leboncoin",
+    "date": "2026-05-10T22:40:34.445527"
   }
 ]
