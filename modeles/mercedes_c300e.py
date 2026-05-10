@@ -165,20 +165,7 @@ MODELE = {
             "notes"   : "Toit ouvrant à confirmer. Négocier extension garantie 12 mois.",
             "date_ajout": "2026-05-08",
         },
-        {
-            "id"      : "simplicicar_villejuif_2023_14900",
-            "titre"   : "C300e AMG Line 2023 · 14 900 km · Toit ouvrant",
-            "vendeur" : "Simplicicar Villejuif (94)",
-            "prix"    : None,
-            "url"     : "https://www.simplicicar.com/occasions-simplicicar-villejuif/117558-mercedes-classe-c-300e-9g-tronic-amg-line-1-ere-main-toit-ouvrant-camera-360-sieges-electriques-garantie-mercedes.html",
-            "annee"   : 2023,
-            "km"      : 14900,
-            "equipements": {"toit_ouvrant": True, "camera_360": True},
-            "garantie_mois": 12,
-            "statut"  : "PRIORITE_ABSOLUE",
-            "notes"   : "Kilométrage exceptionnel. Prix à confirmer d'urgence.",
-            "date_ajout": "2026-05-08",
-        },
+        
     ],
 
     # ── Surcharge scoring (optionnel) ─────────────────────────
