@@ -27,13 +27,21 @@ TOKEN_FILE = Path(__file__).parent.parent / "token.json"
 
 # Senders d'alertes reconnus
 SENDERS_ALERTES = {
-    "alertes@leboncoin.fr"     : "Leboncoin",
-    "alerte@leboncoin.fr"      : "Leboncoin",
-    "noreply@leboncoin.fr"     : "Leboncoin",
-    "alertes@lacentrale.fr"    : "La Centrale",
-    "alert@autoscout24.fr"     : "Autoscout24",
-    "no-reply@autoscout24.fr"  : "Autoscout24",
-    "alertes@leparking.fr"     : "Le Parking",
+    # Leboncoin
+    "alertes@leboncoin.fr"                        : "Leboncoin",
+    "alerte@leboncoin.fr"                         : "Leboncoin",
+    "noreply@leboncoin.fr"                        : "Leboncoin",
+    "no-reply@leboncoin.fr"                       : "Leboncoin",
+    # La Centrale — expéditeurs confirmés
+    "info@mail-alerte.lacentrale.fr"              : "La Centrale",
+    "no-reply@info1.lacentrale.fr"                : "La Centrale",
+    "alertes@lacentrale.fr"                       : "La Centrale",
+    # Autoscout24 — expéditeur confirmé
+    "savedsearches@notifications.autoscout24.com" : "Autoscout24",
+    "alert@autoscout24.fr"                        : "Autoscout24",
+    "no-reply@autoscout24.fr"                     : "Autoscout24",
+    # Le Parking
+    "alertes@leparking.fr"                        : "Le Parking",
 }
 
 
@@ -178,6 +186,66 @@ def _parser_generique(texte: str, source_nom: str) -> list:
     return annonces
 
 
+
+def _parser_autoscout24(texte: str, source_nom: str) -> list:
+    """Parse un email d'alerte Autoscout24."""
+    annonces = []
+    # AS24 envoie des liens du type /offres/mercedes-benz-c-300-...
+    urls = re.findall(r'https?://www\.autoscout24\.fr/offres/[^\s<>"&]+', texte)
+    for url in urls[:10]:
+        try:
+            prix_m  = re.search(r'(\d[\d\s]+)\s*€', texte)
+            km_m    = re.search(r'(\d[\d\s]+)\s*km', texte, re.IGNORECASE)
+            annee_m = re.search(r'(202[0-9])', texte)
+            toit    = "panoram" in url.lower() or "toit" in texte.lower()
+            prix    = int(re.sub(r'\s', '', prix_m.group(1))) if prix_m else None
+            km      = int(re.sub(r'\s', '', km_m.group(1))) if km_m else None
+            annee   = int(annee_m.group(1)) if annee_m else None
+            if not prix:
+                continue
+            annonces.append({
+                "source": "Autoscout24 (alerte)", "source_id": SOURCE_ID,
+                "fiabilite_source": FIABILITE,
+                "titre": f"C300e Break {annee or '?'} via alerte AS24",
+                "vendeur": "Via alerte Autoscout24", "url": url,
+                "prix": prix, "annee": annee, "km": km,
+                "toit_ouvrant": True if toit else None,
+                "garantie_mois": None, "premiere_main": None,
+                "entretien_constructeur": None,
+            })
+        except Exception:
+            continue
+    return annonces
+
+
+def _parser_lacentrale(texte: str, source_nom: str) -> list:
+    """Parse un email d'alerte La Centrale."""
+    annonces = []
+    urls = re.findall(r'https?://www\.lacentrale\.fr/auto-occasion-annonce-[^\s<>"&]+', texte)
+    for url in urls[:10]:
+        try:
+            prix_m  = re.search(r'(\d[\d\s]+)\s*€', texte)
+            km_m    = re.search(r'(\d[\d\s]+)\s*km', texte, re.IGNORECASE)
+            annee_m = re.search(r'(202[0-9])', texte)
+            prix    = int(re.sub(r'\s', '', prix_m.group(1))) if prix_m else None
+            km      = int(re.sub(r'\s', '', km_m.group(1))) if km_m else None
+            annee   = int(annee_m.group(1)) if annee_m else None
+            if not prix:
+                continue
+            annonces.append({
+                "source": "La Centrale (alerte)", "source_id": SOURCE_ID,
+                "fiabilite_source": FIABILITE,
+                "titre": f"C300e Break {annee or '?'} via alerte La Centrale",
+                "vendeur": "Via alerte La Centrale", "url": url,
+                "prix": prix, "annee": annee, "km": km,
+                "toit_ouvrant": None, "garantie_mois": None,
+                "premiere_main": None, "entretien_constructeur": None,
+            })
+        except Exception:
+            continue
+    return annonces
+
+
 def scraper(modele: dict = None) -> list:
     """
     Parse les emails d'alertes dans Gmail.
@@ -234,6 +302,10 @@ def scraper(modele: dict = None) -> list:
                 # Parser selon la source
                 if "leboncoin" in from_addr:
                     nouvelles = _parser_leboncoin(texte, html, source_nom)
+                elif "autoscout24" in from_addr:
+                    nouvelles = _parser_autoscout24(texte, source_nom)
+                elif "lacentrale" in from_addr:
+                    nouvelles = _parser_lacentrale(texte, source_nom)
                 else:
                     nouvelles = _parser_generique(texte, source_nom)
 
