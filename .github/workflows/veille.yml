@@ -64,6 +64,8 @@ jobs:
       - name: 💾 Commit historique
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        with:
           commit_message: "📊 car-watch — historique $(date +'%d/%m/%Y %H:%M')"
           file_pattern: "data/**/*.json"
           commit_author: "car-watch bot <bot@github.com>"
