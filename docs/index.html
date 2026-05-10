@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>car-watch — Veille C300e Break</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#111118;--surface2:#1a1a24;--border:rgba(255,255,255,0.06);--text:#e8e8f0;--text-dim:#6b6b80;--accent:#c8f564;--urgent:#ff4d6d;--alerte:#ffa726;--info:#4fc3f7;--mono:"DM Mono",monospace;--sans:"Syne",sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+header{padding:3rem 2rem 2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;position:relative}
+header::after{content:"";position:absolute;bottom:-1px;left:0;width:120px;height:1px;background:var(--accent)}
+.logo{font-size:.75rem;font-family:var(--mono);color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem}
+h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1;letter-spacing:-.03em}
+h1 span{color:var(--accent)}
+.last-update{font-family:var(--mono);font-size:.72rem;color:var(--text-dim)}
+.live-dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.stat{background:var(--bg);padding:1.5rem 2rem;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);transform:scaleY(0);transform-origin:bottom;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.stat:hover::before{transform:scaleY(1)}
+.stat-val{font-size:2.5rem;font-weight:800;line-height:1;font-family:var(--mono);margin-bottom:.25rem}
+.stat-lbl{font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.12em}
+.main{padding:2rem;display:grid;grid-template-columns:1fr 340px;gap:2rem;max-width:1400px;margin:0 auto}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+.section-label{font-family:var(--mono);font-size:.68rem;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem}
+.section-label::after{content:"";flex:1;height:1px;background:var(--border)}
+.cards{display:flex;flex-direction:column;gap:1px}
+.card{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;position:relative;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block;animation:fadeUp .4s both}
+.card:hover{background:var(--surface2);border-color:rgba(255,255,255,.12);transform:translateX(4px)}
+.card::after{content:"→";position:absolute;right:1.5rem;top:50%;transform:translateY(-50%) translateX(4px);opacity:0;color:var(--accent);font-size:1rem;transition:all .2s}
+.card:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
+.card-urgent{border-left:3px solid var(--urgent)}.card-alerte{border-left:3px solid var(--alerte)}.card-info{border-left:3px solid var(--info)}.card-faible{border-left:3px solid var(--border)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.75rem}
+.card-title{font-size:.95rem;font-weight:600;line-height:1.3}
+.card-source{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);margin-top:.2rem}
+.card-price{font-family:var(--mono);font-size:1.2rem;font-weight:500;white-space:nowrap;color:var(--accent)}
+.card-price.baisse{color:#4ade80}
+.card-bottom{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border-radius:2px;letter-spacing:.05em}
+.badge-urgent{background:rgba(255,77,109,.15);color:var(--urgent)}.badge-alerte{background:rgba(255,167,38,.15);color:var(--alerte)}.badge-info{background:rgba(79,195,247,.15);color:var(--info)}.badge-faible{background:rgba(255,255,255,.05);color:var(--text-dim)}
+.chip{font-size:.68rem;color:var(--text-dim);font-family:var(--mono)}.chip-ok{color:var(--accent)}
+.score-bar{height:2px;background:var(--border);border-radius:1px;margin-top:.75rem;overflow:hidden}
+.score-fill{height:100%;border-radius:1px}
+.sidebar{display:flex;flex-direction:column;gap:1.5rem}
+.sidebar-card{background:var(--surface);border:1px solid var(--border);padding:1.25rem}
+.sidebar-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;color:var(--text-dim)}
+.suivi-item{padding:.75rem 0;border-bottom:1px solid var(--border)}.suivi-item:last-child{border-bottom:none}
+.suivi-statut{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;padding:2px 6px;margin-bottom:.4rem;display:inline-block}
+.statut-priorite{background:rgba(255,77,109,.2);color:var(--urgent)}.statut-contacter{background:rgba(255,167,38,.2);color:var(--alerte)}.statut-cours{background:rgba(79,195,247,.2);color:var(--info)}.statut-visite{background:rgba(200,245,100,.2);color:var(--accent)}
+.suivi-titre{font-size:.82rem;font-weight:600;line-height:1.3;margin-bottom:.25rem}
+.suivi-meta{font-family:var(--mono);font-size:.65rem;color:var(--text-dim)}
+.suivi-notes{font-size:.72rem;color:var(--text-dim);margin-top:.3rem;font-style:italic}
+.source-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.78rem}.source-row:last-child{border-bottom:none}
+.source-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:8px}
+.dot-ok{background:var(--accent)}.dot-warn{background:var(--alerte)}.dot-off{background:var(--border)}
+.source-count{font-family:var(--mono);font-size:.68rem;color:var(--text-dim)}
+.tendance-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.8rem}.tendance-row:last-child{border-bottom:none}
+.tendance-val{font-family:var(--mono);color:var(--accent);font-size:.78rem}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem;gap:1rem}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--mono);font-size:.72rem;color:var(--text-dim);letter-spacing:.15em}
+.empty{padding:3rem;text-align:center;color:var(--text-dim);font-family:var(--mono);font-size:.8rem;border:1px dashed var(--border)}
+.criteria{display:flex;gap:.5rem;flex-wrap:wrap}
+.criterion{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border:1px solid var(--border);color:var(--text-dim)}
+footer{padding:2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:2rem}
+footer span{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);letter-spacing:.1em}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">car-watch v1.0</div>
+    <h1>&#x1F697; C300e <span>Break</span></h1>
+  </div>
+  <div>
+    <div class="last-update"><span class="live-dot"></span><span id="last-update">Chargement...</span></div>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-val" id="stat-total">&#x2014;</div><div class="stat-lbl">Annonces actives</div></div>
+  <div class="stat"><div class="stat-val" id="stat-prix-moy" style="font-size:1.6rem">&#x2014;</div><div class="stat-lbl">Prix moyen</div></div>
+  <div class="stat"><div class="stat-val" id="stat-km-moy">&#x2014;</div><div class="stat-lbl">Km moyen</div></div>
+  <div class="stat"><div class="stat-val" id="stat-sources">&#x2014;</div><div class="stat-lbl">Sources actives</div></div>
+</div>
+
+<div class="main">
+  <div>
+    <div class="section-label">Top annonces actives</div>
+    <div class="cards" id="cards-container">
+      <div class="loading"><div class="spinner"></div><div class="loading-text">Chargement...</div></div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">&#x1F4CC; Suivi manuel</div>
+      <div id="suivi-container"><div class="loading" style="padding:1.5rem"><div class="spinner"></div></div></div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-title">&#x1F50D; Sources</div>
+      <div class="source-row"><span><span class="source-dot dot-ok"></span>Autoscout24 NAS</span><span class="source-count">7h30</span></div>
+      <div class="source-row"><span><span class="source-dot dot-ok"></span>Le Parking</span><span class="source-count">7h30</span></div>
+      <div class="source-row"><span><span class="source-dot dot-ok"></span>Gmail alertes</span><span class="source-count">7h30</span></div>
+      <div class="source-row"><span><span class="source-dot dot-ok"></span>Autohero</span><span class="source-count">8h00</span></div>
+      <div class="source-row"><span><span class="source-dot dot-ok"></span>Aramisauto</span><span class="source-count">8h00</span></div>
+      <div class="source-row"><span><span class="source-dot dot-warn"></span>Leboncoin</span><span class="source-count">alerte</span></div>
+      <div class="source-row"><span><span class="source-dot dot-warn"></span>La Centrale</span><span class="source-count">alerte</span></div>
+      <div class="source-row"><span><span class="source-dot dot-off"></span>MB Certified</span><span class="source-count">8h00</span></div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-title">&#x1F4CA; Tendances march&#xe9;</div>
+      <div class="tendance-row"><span>Prix moyen</span><span class="tendance-val" id="t-prix">&#x2014;</span></div>
+      <div class="tendance-row"><span>Km moyen</span><span class="tendance-val" id="t-km">&#x2014;</span></div>
+      <div class="tendance-row"><span>Prix min actif</span><span class="tendance-val" id="t-min">&#x2014;</span></div>
+      <div class="tendance-row"><span>Prix max actif</span><span class="tendance-val" id="t-max">&#x2014;</span></div>
+      <div class="tendance-row"><span>Baisses enregistr&#xe9;es</span><span class="tendance-val" id="t-baisses">&#x2014;</span></div>
+      <div class="tendance-row"><span>Total historique</span><span class="tendance-val" id="t-historique">&#x2014;</span></div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-title">&#x2699;&#xfe0f; Crit&#xe8;res actifs</div>
+      <div class="criteria">
+        <span class="criterion">&ge; 2023</span><span class="criterion">Break T-Modell</span>
+        <span class="criterion">PHEV 313ch</span><span class="criterion">&le; 65 000 km</span>
+        <span class="criterion">&le; 42 000 &euro;</span><span class="criterion">Toit ouvrant</span>
+        <span class="criterion">Garantie &ge; 12 mois</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>car-watch &middot; Mercedes C300e Break &middot; Donn&#xe9;es GitHub</span>
+  <span id="footer-date">&#x2014;</span>
+</footer>
+
+<script>
+const RAW="https://raw.githubusercontent.com/vinssant/car-watch/main";
+const fmtP=p=>p?new Intl.NumberFormat("fr-FR").format(p)+" €":"?";
+const fmtK=k=>k?new Intl.NumberFormat("fr-FR").format(k)+" km":"?";
+function sColor(s){return s>=85?"var(--urgent)":s>=70?"var(--alerte)":s>=50?"var(--info)":"var(--border)"}
+function sCls(s){return s>=85?"urgent":s>=70?"alerte":s>=50?"info":"faible"}
+async function fj(url){try{const r=await fetch(url+"?t="+Date.now());return r.ok?r.json():[];}catch(e){return[];}}
+async function init(){
+  const[nA,nH,gA,gH,py]=await Promise.all([
+    fj(RAW+"/data/mercedes_c300e_nas/seen_ads.json"),
+    fj(RAW+"/data/mercedes_c300e_nas/ads_history.json"),
+    fj(RAW+"/data/mercedes_c300e/seen_ads.json"),
+    fj(RAW+"/data/mercedes_c300e/ads_history.json"),
+    fetch(RAW+"/modeles/mercedes_c300e.py").then(r=>r.ok?r.text():"").catch(()=>""),
+  ]);
+  const seen=new Set();
+  const ads=[...(Array.isArray(nA)?nA:[]),...(Array.isArray(gA)?gA:[])].filter(a=>{
+    if(!a||!a.url||seen.has(a.url))return false;seen.add(a.url);return true;
+  }).sort((a,b)=>(b.score_total||0)-(a.score_total||0));
+  const hist=[...(Array.isArray(nH)?nH:[]),...(Array.isArray(gH)?gH:[])];
+  const px=ads.map(a=>a.prix).filter(Boolean);
+  const km=ads.map(a=>a.km).filter(Boolean);
+  const srcs=new Set(ads.map(a=>a.source_id).filter(Boolean));
+  document.getElementById("stat-total").textContent=ads.length||"—";
+  document.getElementById("stat-prix-moy").textContent=px.length?Math.round(px.reduce((s,v)=>s+v,0)/px.length).toLocaleString("fr-FR")+" €":"—";
+  document.getElementById("stat-km-moy").textContent=km.length?Math.round(km.reduce((s,v)=>s+v,0)/km.length).toLocaleString("fr-FR"):"—";
+  document.getElementById("stat-sources").textContent=srcs.size||"—";
+  if(px.length){document.getElementById("t-prix").textContent=fmtP(Math.round(px.reduce((s,v)=>s+v,0)/px.length));document.getElementById("t-min").textContent=fmtP(Math.min(...px));document.getElementById("t-max").textContent=fmtP(Math.max(...px));}
+  if(km.length)document.getElementById("t-km").textContent=fmtK(Math.round(km.reduce((s,v)=>s+v,0)/km.length));
+  document.getElementById("t-baisses").textContent=hist.filter(e=>e&&e.event==="BAISSE_PRIX").length;
+  document.getElementById("t-historique").textContent=new Set(hist.map(e=>e&&e.id).filter(Boolean)).size;
+  const cc=document.getElementById("cards-container");
+  if(!ads.length){cc.innerHTML="<div class=\"empty\">Aucune annonce active &mdash; prochain run &agrave; 7h30</div>";}
+  else{cc.innerHTML=ads.map((a,i)=>{
+    const s=a.score_total||0,cl=sCls(s);
+    const toit=a.toit_ouvrant===true?"<span class=\"chip chip-ok\">Toit ✓</span>":a.toit_ouvrant===false?"<span class=\"chip\">Toit ✗</span>":"<span class=\"chip\">Toit ?</span>";
+    const ph=a.prix_baisse&&a.prix_precedent?`<span class="card-price baisse">${fmtP(a.prix)}</span>`:`<span class="card-price">${fmtP(a.prix)}</span>`;
+    return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span><div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div></a>`;
+  }).join("");}
+  const sc=document.getElementById("suivi-container");
+  if(py){
+    const sects=py.split('"id"').slice(1);
+    const items=[];
+    for(const sec of sects){
+      const g=k=>{const r=new RegExp(`"${k}"\\s*:\\s*(?:"([^"]*)"|(None|True|False|\\d+))`);const x=sec.match(r);if(!x)return null;if(x[1]!==undefined)return x[1];if(x[2]==="None")return null;return x[2];};
+      const st=g("statut");if(!st||st==="PASSEE"||st==="ECARTEE")continue;
+      const t=g("titre"),v=g("vendeur"),p=g("prix"),k=g("km"),u=g("url"),n=g("notes");if(!t)continue;
+      const sc2={PRIORITE_ABSOLUE:"statut-priorite",A_CONTACTER:"statut-contacter",CONTACT_EN_COURS:"statut-cours",VISITE_PLANIFIEE:"statut-visite",OFFRE_FAITE:"statut-visite",A_VERIFIER:"statut-contacter"}[st]||"";
+      items.push(`<div class="suivi-item"><a href="${u||"#"}" target="_blank" style="text-decoration:none;color:inherit"><span class="suivi-statut ${sc2}">${st}</span><div class="suivi-titre">${t}</div><div class="suivi-meta">${v||""} &middot; ${p?fmtP(parseInt(p)):"?"} &middot; ${k?fmtK(parseInt(k)):"?"}</div>${n?`<div class="suivi-notes">${n}</div>`:""}</a></div>`);
+    }
+    sc.innerHTML=items.length?items.join(""):"<div style=\"font-size:.75rem;color:var(--text-dim);padding:.5rem 0\">Aucun suivi actif</div>";
+  }else{sc.innerHTML="<div class=\"empty\" style=\"padding:1rem\">Non disponible</div>";}
+  const now=new Date().toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+  document.getElementById("last-update").textContent="Actualisé le "+now;
+  document.getElementById("footer-date").textContent="Données GitHub · "+now;
+}
+init();setInterval(init,5*60*1000);
+</script>
+</body>
+</html>
