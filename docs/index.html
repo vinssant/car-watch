@@ -208,9 +208,13 @@ async function archiver(adId, adUrl, motifKey, motifLabel, titre){
     }
   );
   if(resp.status===204||resp.ok){
-    showToast("✓ Archivé : "+motifLabel);
-    // Masquer la carte immédiatement
-    document.querySelectorAll(`[data-ad-id="${adId}"]`).forEach(el=>el.style.display="none");
+    showToast("✓ Archivé : "+motifLabel+" — rechargement dans 15s");
+    // Masquer uniquement la carte exacte via son href
+    document.querySelectorAll(".card").forEach(el=>{
+      if(el.href&&el.href===adUrl) el.style.opacity="0.2";
+    });
+    // Recharger après 15s (temps que GH Actions commite archived.json)
+    setTimeout(()=>init(), 15000);
   } else {
     const err=await resp.json().catch(()=>({}));
     showToast("Erreur "+resp.status+": "+(err.message||"?"), false);
@@ -260,7 +264,9 @@ async function init(){
   if(!ads.length){cc.innerHTML='<div class="empty">Aucune annonce active &mdash; prochain run &agrave; 7h30</div>';}
   else{cc.innerHTML=ads.map((a,i)=>{
     const s=a.score_total||0,cl=sCls(s);
-    const adId=a.id||(a.url?btoa(a.url).slice(0,12):"?");
+    // adId : utiliser l'id du seen_ads.json en priorité
+    // Fallback : hash simple sur l'URL complète (pas tronqué)
+    const adId=a.id||("url_"+encodeURIComponent(a.url||"").slice(0,40));
     const toit=a.toit_ouvrant===true?'<span class="chip chip-ok">Toit \u2713</span>':a.toit_ouvrant===false?'<span class="chip">Toit \u2717</span>':'<span class="chip">Toit ?</span>';
     const ph=a.prix_baisse&&a.prix_precedent?`<span class="card-price baisse">${fmtP(a.prix)}</span>`:`<span class="card-price">${fmtP(a.prix)}</span>`;
     const fs=a.first_seen_at||a.premiere_vue;
