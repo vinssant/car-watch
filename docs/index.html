@@ -228,13 +228,7 @@ async function archiver(adId, adUrl, motifKey, motifLabel, titre){
     }
   );
   if(resp.status===204||resp.ok){
-    // Stocker métadonnées complètes dans localStorage (archived_ads) + URL dans archived_urls
-    const localArchivedAds=JSON.parse(localStorage.getItem("archived_ads")||"[]");
-    if(!localArchivedAds.find(a=>a.url===adUrl)){
-      localArchivedAds.push({id:adId, url:adUrl, motif:motifLabel, titre:titre||adUrl, archived_at:new Date().toISOString(), local:true});
-    }
-    localStorage.setItem("archived_ads", JSON.stringify(localArchivedAds));
-    // Conserver aussi archived_urls pour le filtre
+    // Stocker l'URL archivée dans localStorage → disparition immédiate sans attendre GH Actions
     const localArchived=JSON.parse(localStorage.getItem("archived_urls")||"[]");
     if(!localArchived.includes(adUrl)) localArchived.push(adUrl);
     localStorage.setItem("archived_urls", JSON.stringify(localArchived));
@@ -332,20 +326,7 @@ async function init(){
     ...(Array.isArray(arch)?arch:[]).map(a=>a&&a.url).filter(Boolean),
     ...localArchived
   ]);
-  // Fusionner archived.json (GitHub) + archived_ads (localStorage)
-  const localArchivedAds=JSON.parse(localStorage.getItem("archived_ads")||"[]");
-  const ghArchList=Array.isArray(arch)?arch.filter(a=>a&&a.id!=="test123"):[];
-  const ghUrls=new Set(ghArchList.map(a=>a.url).filter(Boolean));
-  // Garder les locaux pas encore dans GH, nettoyer ceux déjà commitės
-  const localOnly=localArchivedAds.filter(a=>!ghUrls.has(a.url));
-  const stillLocal=localArchivedAds.filter(a=>ghUrls.has(a.url));
-  if(stillLocal.length>0){
-    // Nettoyer archived_ads et archived_urls des entrées déjà dans GH
-    localStorage.setItem("archived_ads", JSON.stringify(localOnly));
-    const remainUrls=localArchived.filter(u=>!ghUrls.has(u));
-    localStorage.setItem("archived_urls", JSON.stringify(remainUrls));
-  }
-  const archList=[...ghArchList, ...localOnly];
+  const archList=Array.isArray(arch)?arch:[];
   const now=Date.now();
 
   const seen=new Set();
@@ -376,7 +357,7 @@ async function init(){
     const s=a.score_total||0,cl=sCls(s);
     // adId : utiliser l'id du seen_ads.json en priorité
     // Fallback : hash simple sur l'URL complète (pas tronqué)
-    const adId=a.id||("url_"+encodeURIComponent(a.url||"").slice(0,40));
+    const adId=a.id||("url_"+btoa(unescape(encodeURIComponent(a.url||""))).replace(/[^a-zA-Z0-9]/g,"").slice(0,24));
     const toit=a.toit_ouvrant===true?'<span class="chip chip-ok">Toit \u2713</span>':a.toit_ouvrant===false?'<span class="chip">Toit \u2717</span>':'<span class="chip">Toit ?</span>';
     const ph=a.prix_baisse&&a.prix_precedent?`<span class="card-price baisse">${fmtP(a.prix)}</span>`:`<span class="card-price">${fmtP(a.prix)}</span>`;
     const fs=a.first_seen_at||a.premiere_vue;
@@ -398,7 +379,10 @@ async function init(){
     as.style.display="block";
     document.getElementById("archived-label").textContent=`Annonces archiv\u00e9es (${archList.length})`;
     ac.innerHTML=archList.map(a=>`<div class="card-archived"><div class="card-top"><div><span class="card-title" style="font-size:.85rem">${a.titre||a.url||"?"}</span><span class="motif-tag">${a.motif||"?"}</span><div class="card-source" style="margin-top:.25rem">${a.archived_at?new Date(a.archived_at).toLocaleDateString("fr-FR"):""}</div></div><a href="${a.url||"#"}" target="_blank" style="font-family:var(--mono);font-size:.65rem;color:var(--text-dim)">voir \u2192</a></div></div>`).join("");
-
+    // Nettoyer le localStorage : retirer les URLs déjà dans archived.json (GH Actions a fini)
+    const ghArchivedUrls=new Set(archList.map(a=>a.url).filter(Boolean));
+    const remaining=localArchived.filter(u=>!ghArchivedUrls.has(u));
+    localStorage.setItem("archived_urls", JSON.stringify(remaining));
   }
   
   const nowDisplay=new Date().toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
