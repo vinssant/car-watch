@@ -1,14 +1,16 @@
 # =============================================================
 # main_nas.py — Orchestrateur scrapers NAS (IP résidentielle)
-# Scrapers : Le Parking + Autoscout24 NAS
+# Scrapers : Le Parking + Autoscout24 NAS + MB Certified + Spoticar
 # =============================================================
 
 import sys
 from datetime import datetime
 
 from scrapers import leparking
-from scrapers.autoscout24_nas import scraper as autoscout24_nas_scraper
-from scrapers.gmail_parser import scraper as gmail_parser_scraper
+from scrapers.autoscout24_nas    import scraper as autoscout24_nas_scraper
+from scrapers.gmail_parser       import scraper as gmail_parser_scraper
+from scrapers.mercedes_certified import scraper as mercedes_certified_scraper
+from scrapers.spoticar           import scraper as spoticar_scraper
 
 from modeles import charger_modeles_actifs
 from core.scorer       import calculer_score, trier_annonces
@@ -18,13 +20,15 @@ from core.mailer       import envoyer_email
 from config            import EMAIL_DESTINATAIRE
 
 SCRAPERS_NAS = {
-    "leparking"       : leparking.scraper,
-    "autoscout24_nas" : autoscout24_nas_scraper,
-    "gmail_parser"    : gmail_parser_scraper,
+    "leparking"            : leparking.scraper,
+    "autoscout24_nas"      : autoscout24_nas_scraper,
+    "gmail_parser"         : gmail_parser_scraper,
+    "mercedes_certified"   : mercedes_certified_scraper,
+    "spoticar"             : spoticar_scraper,
 }
 
 # Sources NAS à activer dans chaque modèle
-SOURCES_NAS_IDS = {"leparking", "autoscout24_nas", "autoscout24"}
+SOURCES_NAS_IDS = {"leparking", "autoscout24_nas", "autoscout24", "mercedes_certified", "spoticar"}
 
 
 def main():
