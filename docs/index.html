@@ -208,13 +208,13 @@ async function archiver(adId, adUrl, motifKey, motifLabel, titre){
     }
   );
   if(resp.status===204||resp.ok){
-    showToast("✓ Archivé : "+motifLabel+" — rechargement dans 15s");
-    // Masquer uniquement la carte exacte via son href
+    showToast("✓ Archivé : "+motifLabel+" — rechargement dans 45s");
+    // Griser la carte concernée immédiatement
     document.querySelectorAll(".card").forEach(el=>{
       if(el.href&&el.href===adUrl) el.style.opacity="0.2";
     });
-    // Recharger après 15s (temps que GH Actions commite archived.json)
-    setTimeout(()=>init(), 15000);
+    // Recharger après 45s (GH Actions ~10s + CDN GitHub Pages ~30s)
+    setTimeout(()=>init(), 45000);
   } else {
     const err=await resp.json().catch(()=>({}));
     showToast("Erreur "+resp.status+": "+(err.message||"?"), false);
