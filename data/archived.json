@@ -12,5 +12,12 @@
     "titre": "Test",
     "motif": "Test",
     "archived_at": "2026-05-11T14:31:33.151150"
+  },
+  {
+    "id": "url_https%3A%2F%2Fwww.lacentrale.fr%2Fauto-o",
+    "url": "https://www.lacentrale.fr/auto-occasion-annonce-69119004702.html",
+    "titre": "Mercedes C Break 300e 2025",
+    "motif": "🚫 Hybride diesel",
+    "archived_at": "2026-05-11T14:53:00.027707"
   }
 ]
