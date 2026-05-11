@@ -1,0 +1,85 @@
+# .github/workflows/archive.yml
+# Archivage manuel d'une annonce depuis le dashboard
+# Déclenché via l'API GitHub (bouton dans index.html)
+
+name: Archiver annonce
+
+on:
+  workflow_dispatch:
+    inputs:
+      ad_id:
+        description: 'ID de l annonce'
+        required: true
+      ad_url:
+        description: 'URL de l annonce'
+        required: true
+      motif:
+        description: 'Motif de rejet'
+        required: true
+      titre:
+        description: 'Titre de l annonce'
+        required: false
+        default: ''
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Archiver l'annonce
+        run: |
+          python3 - << 'PYEOF'
+          import json, os
+          from datetime import datetime
+          from pathlib import Path
+
+          ad_id  = os.environ["AD_ID"]
+          ad_url = os.environ["AD_URL"]
+          motif  = os.environ["MOTIF"]
+          titre  = os.environ["TITRE"]
+          now    = datetime.now().isoformat()
+
+          path = Path("data/archived.json")
+          path.parent.mkdir(parents=True, exist_ok=True)
+
+          try:
+              archived = json.loads(path.read_text(encoding="utf-8"))
+          except (FileNotFoundError, json.JSONDecodeError):
+              archived = []
+
+          # Éviter les doublons
+          ids = {a["id"] for a in archived}
+          if ad_id not in ids:
+              archived.append({
+                  "id":          ad_id,
+                  "url":         ad_url,
+                  "titre":       titre,
+                  "motif":       motif,
+                  "archived_at": now,
+              })
+              path.write_text(
+                  json.dumps(archived, ensure_ascii=False, indent=2),
+                  encoding="utf-8"
+              )
+              print(f"✅ Archivé : {ad_id} — {motif}")
+          else:
+              print(f"ℹ️  Déjà archivé : {ad_id}")
+          PYEOF
+        env:
+          AD_ID:  ${{ github.event.inputs.ad_id }}
+          AD_URL: ${{ github.event.inputs.ad_url }}
+          MOTIF:  ${{ github.event.inputs.motif }}
+          TITRE:  ${{ github.event.inputs.titre }}
+
+      - name: Commit archived.json
+        run: |
+          git config user.name  "car-watch-bot"
+          git config user.email "bot@car-watch"
+          git add data/archived.json
+          git diff --staged --quiet || git commit -m "archive: ${{ github.event.inputs.ad_id }} — ${{ github.event.inputs.motif }}"
+          git push

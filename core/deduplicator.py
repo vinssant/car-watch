@@ -51,7 +51,18 @@ def traiter_annonces(annonces: list, modele_id: str) -> dict:
     historique = _charger(history_path)
     now        = datetime.now().isoformat()
 
-    vues_index          = {a["id"]: a for a in vues if isinstance(a, dict) and "id" in a}
+    # Charger les annonces archivées pour les exclure du traitement
+    archived_path = dossier.parent / "archived.json"
+    try:
+        archived_ids = {a["id"] for a in json.loads(archived_path.read_text(encoding="utf-8"))}
+    except (FileNotFoundError, json.JSONDecodeError, AttributeError):
+        archived_ids = set()
+
+    # Filtrer les annonces archivées de la liste entrante
+    annonces = [a for a in annonces if _id_annonce(a) not in archived_ids]
+
+    vues_index          = {a["id"]: a for a in vues if isinstance(a, dict) and "id" in a
+                           and a.get("id") not in archived_ids}
     nouvelles           = []
     prix_baisses        = []
     prix_hausses        = []
@@ -65,16 +76,18 @@ def traiter_annonces(annonces: list, modele_id: str) -> dict:
         ids_vus_aujourd_hui.add(ad_id)
 
         if ad_id not in vues_index:
-            annonce["premiere_vue"] = now
-            annonce["est_nouvelle"] = True
+            annonce["premiere_vue"]   = now
+            annonce["first_seen_at"]  = now   # jamais écrasé
+            annonce["est_nouvelle"]   = True
             nouvelles.append(annonce)
             historique.append({"id": ad_id, "date": now, "event": "APPARITION",
                                 "prix": annonce.get("prix"), "km": annonce.get("km"),
                                 "titre": annonce.get("titre"), "source": annonce.get("source")})
         else:
             ancienne = vues_index[ad_id]
-            annonce["premiere_vue"] = ancienne.get("premiere_vue", now)
-            annonce["est_nouvelle"] = False
+            annonce["premiere_vue"]  = ancienne.get("premiere_vue", now)
+            annonce["first_seen_at"] = ancienne.get("first_seen_at", ancienne.get("premiere_vue", now))
+            annonce["est_nouvelle"]  = False
 
             ancien_prix  = ancienne.get("prix")
             nouveau_prix = annonce.get("prix")
