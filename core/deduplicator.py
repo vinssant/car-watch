@@ -5,6 +5,8 @@
 
 import json
 import hashlib
+import urllib.request
+import urllib.error
 from datetime import datetime
 from pathlib import Path
 
@@ -36,6 +38,51 @@ def _id_annonce(annonce: dict) -> str:
         return hashlib.md5(url.encode()).hexdigest()[:12]
     cle = f"{annonce.get('source','')}-{annonce.get('titre','')}-{annonce.get('prix','')}"
     return hashlib.md5(cle.encode()).hexdigest()[:12]
+
+
+def logger_print(msg: str):
+    """Print simple — compatible avec le logging du projet."""
+    print(msg)
+
+
+# Sources où le check HTTP est fiable (pas de redirect trompeur)
+SOURCES_CHECK_HTTP = {
+    "mercedes_certified", "leparking", "autoscout24_nas",
+    "autoscout24", "spoticar",
+}
+
+def _url_active(url: str, source_id: str = "") -> bool:
+    """
+    Vérifie qu'une annonce est toujours en ligne.
+    Retourne True si active, False si retirée (404, redirect racine, etc.)
+    En cas d'erreur réseau → True par défaut (on ne retire pas par erreur).
+    Uniquement pour les sources où le check est fiable.
+    """
+    if not url or source_id not in SOURCES_CHECK_HTTP:
+        return True
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+            method="HEAD",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            final_url = resp.url
+            # Redirect vers page d'accueil = annonce retirée
+            if final_url and final_url.rstrip("/") != url.rstrip("/"):
+                domain_orig = url.split("/")[2]
+                domain_final = final_url.split("/")[2]
+                path_final = "/".join(final_url.split("/")[3:]).rstrip("/")
+                if domain_orig == domain_final and len(path_final) < 5:
+                    return False  # redirigé vers racine
+            return resp.status < 400
+    except urllib.error.HTTPError as e:
+        if e.code in (404, 410, 301, 302):
+            # 404/410 = retiré, 301/302 sans follow = redirect (géré via urlopen)
+            return e.code not in (404, 410)
+        return True  # autre erreur HTTP → on garde
+    except Exception:
+        return True  # erreur réseau → on garde par sécurité
 
 
 def traiter_annonces(annonces: list, modele_id: str) -> dict:
@@ -108,16 +155,29 @@ def traiter_annonces(annonces: list, modele_id: str) -> dict:
             else:
                 inchangees.append(annonce)
 
-    # Disparitions
-    disparues = []
+    # Disparitions + vérification HTTP des annonces non vues aujourd'hui
+    disparues  = []
+    survivantes = []  # annonces non vues ce run mais toujours en ligne
+
     for ad_id, ancienne in vues_index.items():
         if ad_id not in ids_vus_aujourd_hui:
-            ancienne["statut_disparition"] = now
-            disparues.append(ancienne)
-            historique.append({"id": ad_id, "date": now, "event": "DISPARITION",
-                                "titre": ancienne.get("titre"), "prix": ancienne.get("prix")})
+            url       = ancienne.get("url", "")
+            source_id = ancienne.get("source_id", "")
+            active    = _url_active(url, source_id)
 
-    toutes_actives = nouvelles + prix_baisses + prix_hausses + inchangees
+            if not active:
+                # Annonce retirée → on la sort de seen_ads
+                ancienne["statut_disparition"] = now
+                disparues.append(ancienne)
+                historique.append({"id": ad_id, "date": now, "event": "DISPARITION",
+                                   "titre": ancienne.get("titre"), "prix": ancienne.get("prix"),
+                                   "raison": "HTTP_404"})
+                logger_print(f"  🗑️  Annonce retirée : {ancienne.get('titre','?')} ({url})")
+            else:
+                # Non vue ce run (scraper partiel) mais toujours en ligne → on la garde
+                survivantes.append(ancienne)
+
+    toutes_actives = nouvelles + prix_baisses + prix_hausses + inchangees + survivantes
     _sauvegarder(seen_path, toutes_actives)
     _sauvegarder(history_path, historique)
 
