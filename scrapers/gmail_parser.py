@@ -44,6 +44,9 @@ SENDERS_ALERTES = {
     "no-reply@autoscout24.fr"                     : "Autoscout24",
     # Le Parking
     "alertes@leparking.fr"                        : "Le Parking",
+    # Spoticar (Stellantis) — expéditeurs confirmés
+    "info@spoticar.stellantis.com"                : "Spoticar",
+    "bounce.web.stellantis.com"                   : "Spoticar",  # domaine de routage
 }
 
 
@@ -148,6 +151,42 @@ def _parser_leboncoin(texte: str, html: str, source: str) -> list:
         except Exception:
             continue
 
+    return annonces
+
+
+def _parser_spoticar(texte: str, source_nom: str) -> list:
+    """Parse un email d'alerte Spoticar."""
+    annonces = []
+    # Spoticar envoie des liens du type /voitures-occasion/mercedes-...-{id}
+    urls = re.findall(r'https?://www\.spoticar\.fr/voitures-occasion/[^\s<>"&]+', texte)
+    for url in urls[:10]:
+        try:
+            prix_m  = re.search(r'(\d[\d\s]+)\s*€', texte)
+            km_m    = re.search(r'(\d[\d\s]+)\s*km', texte, re.IGNORECASE)
+            annee_m = re.search(r'(202[0-9])', texte)
+            toit    = "toit ouvrant" in texte.lower() or "panoram" in texte.lower()
+            prix    = int(re.sub(r'\s', '', prix_m.group(1))) if prix_m else None
+            km      = int(re.sub(r'\s', '', km_m.group(1))) if km_m else None
+            annee   = int(annee_m.group(1)) if annee_m else None
+            if not prix:
+                continue
+            annonces.append({
+                "source"                 : "Spoticar (alerte)",
+                "source_id"              : SOURCE_ID,
+                "fiabilite_source"       : FIABILITE,
+                "titre"                  : f"C300e Break {annee or '?'} via alerte Spoticar",
+                "vendeur"                : "Via alerte Spoticar",
+                "url"                    : url,
+                "prix"                   : prix,
+                "annee"                  : annee,
+                "km"                     : km,
+                "toit_ouvrant"           : True if toit else None,
+                "garantie_mois"          : None,
+                "premiere_main"          : None,
+                "entretien_constructeur" : None,
+            })
+        except Exception:
+            continue
     return annonces
 
 
@@ -309,6 +348,8 @@ def scraper(modele: dict = None) -> list:
                     nouvelles = _parser_autoscout24(texte, source_nom)
                 elif "lacentrale" in from_addr:
                     nouvelles = _parser_lacentrale(texte, source_nom)
+                elif "spoticar" in from_addr or "stellantis" in from_addr:
+                    nouvelles = _parser_spoticar(texte, source_nom)
                 else:
                     nouvelles = _parser_generique(texte, source_nom)
 
