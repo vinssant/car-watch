@@ -5,17 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>car-watch — Veille C300e Break</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0f;--surface:#111118;--surface2:#1a1a24;--border:rgba(255,255,255,0.06);--text:#e8e8f0;--text-dim:#6b6b80;--accent:#c8f564;--urgent:#ff4d6d;--alerte:#ffa726;--info:#4fc3f7;--mono:"DM Mono",monospace;--sans:"Syne",sans-serif}
+:root{--bg:#0a0a0f;--surface:#111118;--surface2:#1a1a24;--border:rgba(255,255,255,0.06);--text:#e8e8f0;--text-dim:#6b6b80;--accent:#c8f564;--urgent:#ff4d6d;--alerte:#ffa726;--info:#4fc3f7;--mono:"DM Mono",monospace;--sans:"Inter",system-ui,sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
-header{padding:3rem 2rem 2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;position:relative}
-header::after{content:"";position:absolute;bottom:-1px;left:0;width:120px;height:1px;background:var(--accent)}
-.logo{font-size:.75rem;font-family:var(--mono);color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem}
-h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1;letter-spacing:-.03em}
-h1 span{color:var(--accent)}
-.last-update{font-family:var(--mono);font-size:.72rem;color:var(--text-dim)}
+header{position:relative;height:220px;overflow:hidden;border-bottom:1px solid var(--border);display:flex;align-items:flex-end}
+.header-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1553440569-bcc63803a83d?w=1600&q=80&fit=crop&crop=center') center/cover no-repeat;filter:brightness(.32) saturate(.7)}
+.header-gradient{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,15,.97) 35%,rgba(10,10,15,.5) 70%,rgba(10,10,15,.1) 100%)}
+.header-gradient-bottom{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,15,1) 0%,transparent 40%)}
+.header-content{position:relative;z-index:2;padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:flex-end;width:100%;flex-wrap:wrap;gap:1rem}
+.logo{font-size:.68rem;font-family:var(--mono);color:var(--accent);letter-spacing:.25em;text-transform:uppercase;margin-bottom:.6rem;opacity:.8}
+h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;line-height:1;letter-spacing:-.04em;text-shadow:0 2px 20px rgba(0,0,0,.8)}
+h1 em{font-style:normal;color:var(--accent)}
+h1 small{display:block;font-size:.38em;font-weight:500;letter-spacing:.05em;color:var(--text-dim);margin-top:.3rem;text-transform:uppercase}
+.last-update{font-family:var(--mono);font-size:.68rem;color:var(--text-dim);text-align:right}
 .live-dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
@@ -88,12 +92,17 @@ footer span{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);lette
 </head>
 <body>
 <header>
-  <div>
-    <div class="logo">car-watch v1.0</div>
-    <h1>&#x1F697; C300e <span>Break</span></h1>
-  </div>
-  <div>
-    <div class="last-update"><span class="live-dot"></span><span id="last-update">Chargement...</span></div>
+  <div class="header-bg"></div>
+  <div class="header-gradient"></div>
+  <div class="header-gradient-bottom"></div>
+  <div class="header-content">
+    <div>
+      <div class="logo">car-watch v1.0</div>
+      <h1>C300e <em>Break</em><small>Mercedes-Benz · Veille acquisition</small></h1>
+    </div>
+    <div>
+      <div class="last-update"><span class="live-dot"></span><span id="last-update">Chargement...</span></div>
+    </div>
   </div>
 </header>
 
