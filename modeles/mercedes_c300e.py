@@ -162,7 +162,7 @@ MODELE = {
         {
             "id"      : "ewigo_palaiseau_2023_24100",
             "titre"   : "C300e Break AMG Line 2023 · 24 100 km",
-            "vendeur" : "Ewigo Palaiseau (91)",
+            "vendeur" : "Adrigo Palaiseau (91)",
             "prix"    : 39990,
             "url"     : "https://www.leboncoin.fr/ad/voitures/3092724405",
             "annee"   : 2023,
