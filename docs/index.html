@@ -44,6 +44,11 @@ h1 small{display:block;font-size:.38em;font-weight:500;letter-spacing:.05em;colo
 .card-source{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);margin-top:.2rem}
 .card-price{font-family:var(--mono);font-size:1.2rem;font-weight:500;white-space:nowrap;color:var(--accent)}
 .card-price.baisse{color:#4ade80}
+.card-baisse{border-left-color:#4ade80!important;background:linear-gradient(135deg,rgba(74,222,128,.04) 0%,transparent 60%)!important}
+.prix-block{display:flex;flex-direction:column;align-items:flex-end;gap:.15rem}
+.prix-ancien{font-family:var(--mono);font-size:.72rem;color:var(--text-dim);text-decoration:line-through;opacity:.7}
+.badge-baisse{display:inline-flex;align-items:center;gap:.25rem;font-family:var(--mono);font-size:.6rem;font-weight:600;padding:2px 7px;border-radius:2px;background:rgba(74,222,128,.15);color:#4ade80;letter-spacing:.04em;animation:flashGreen 2s ease-in-out 3}
+@keyframes flashGreen{0%,100%{background:rgba(74,222,128,.15)}50%{background:rgba(74,222,128,.35)}}
 .card-bottom{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
 .badge{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border-radius:2px;letter-spacing:.05em}
 .badge-urgent{background:rgba(255,77,109,.15);color:var(--urgent)}.badge-alerte{background:rgba(255,167,38,.15);color:var(--alerte)}.badge-info{background:rgba(79,195,247,.15);color:var(--info)}.badge-faible{background:rgba(255,255,255,.05);color:var(--text-dim)}
@@ -290,7 +295,11 @@ async function init(){
     // Fallback : hash simple sur l'URL complète (pas tronqué)
     const adId=a.id||("url_"+encodeURIComponent(a.url||"").slice(0,40));
     const toit=a.toit_ouvrant===true?'<span class="chip chip-ok">Toit \u2713</span>':a.toit_ouvrant===false?'<span class="chip">Toit \u2717</span>':'<span class="chip">Toit ?</span>';
-    const ph=a.prix_baisse&&a.prix_precedent?`<span class="card-price baisse">${fmtP(a.prix)}</span>`:`<span class="card-price">${fmtP(a.prix)}</span>`;
+    const isBaisse=a.prix_baisse&&a.prix_precedent;
+    const diffPct=isBaisse&&a.prix_variation_pct?Math.abs(a.prix_variation_pct).toFixed(1):'';
+    const ph=isBaisse
+      ?`<div class="prix-block"><span class="badge-baisse">&#x25BC; -${diffPct}%</span><span class="card-price baisse">${fmtP(a.prix)}</span><span class="prix-ancien">${fmtP(a.prix_precedent)}</span></div>`
+      :`<span class="card-price">${fmtP(a.prix)}</span>`;
     const fs=a.first_seen_at||a.premiere_vue;
     const isNew=fs&&(now-new Date(fs).getTime())<86400000;
     const badgeNew=isNew?'<span class="badge badge-new" style="margin-left:.4rem">NEW</span>':"";
@@ -301,7 +310,7 @@ async function init(){
       return `<button class="motif-btn" onclick="event.preventDefault();event.stopPropagation();archiver('${adId}','${safeUrl}','${m.key}','${safeLabel}','${safeTitre}')">${m.label}</button>`;
     }).join("");
     const dateVue=fs?` &middot; <span style="color:var(--accent);opacity:.7;font-size:.6rem">vu le ${new Date(fs).toLocaleDateString("fr-FR")}</span>`:"";
-    return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}" data-ad-id="${adId}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div><div class="archive-btn">${motifBtns}</div></a>`;
+    return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}${isBaisse?' card-baisse':''}" data-ad-id="${adId}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div><div class="archive-btn">${motifBtns}</div></a>`;
   }).join("");}
 
   const ac=document.getElementById("archived-cards");
