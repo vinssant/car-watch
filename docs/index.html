@@ -371,8 +371,9 @@ async function init(){
     if(a.source_id==="mercedes_certified") confBadges.push('<span class="badge-confiance bc-certified">🏆 MB Certified</span>');
     if(a.entretien_constructeur===true) confBadges.push('<span class="badge-confiance bc-entretien">🔧 Entretien MB</span>');
     if(a.premiere_main===true) confBadges.push('<span class="badge-confiance bc-main">📋 1ère main</span>');
-    if(a.premiere_main===false||(a.vendeur&&a.vendeur.toLowerCase().includes("pro"))&&a.source_id!=="mercedes_certified") confBadges.push('<span class="badge-confiance bc-particulier">👤 Pro</span>');
-    if(!a.garantie_mois) confBadges.push('<span class="badge-confiance bc-nogarantie">⚠️ Sans garantie</span>');
+    if(a.source_id!=="mercedes_certified"&&(a.vendeur&&a.vendeur.toLowerCase().includes("pro"))) confBadges.push('<span class="badge-confiance bc-particulier">👤 Pro</span>');
+    if(a.garantie_mois===0) confBadges.push('<span class="badge-confiance bc-nogarantie">⚠️ Sans garantie</span>');
+    else if(!a.garantie_mois&&a.source_id!=="mercedes_certified") confBadges.push('<span class="badge-confiance" style="background:rgba(255,255,255,.04);color:var(--text-dim);border:1px solid var(--border)">❓ Garantie ?</span>');
     const confianceRow=confBadges.length?`<div class="confiance-row">${confBadges.join("")}</div>`:"";
     const ph=a.prix_baisse&&a.prix_precedent?`<span class="card-price baisse">${fmtP(a.prix)}</span>`:`<span class="card-price">${fmtP(a.prix)}</span>`;
     const fs=a.first_seen_at||a.premiere_vue;
