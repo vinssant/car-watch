@@ -61,7 +61,7 @@ HEADERS = {
 class _MBCertifiedParser(HTMLParser):
     """
     Parse la liste HTML des véhicules MB Certified.
-    Stratégie : chaque fiche véhicule est ancrée sur son lien /vehicle?...
+    Stratégie : chaque fiche véhicule est ancrée sur son lien vehicle?...
     Les données suivantes (prix, km, date MEC, puissance, vendeur) sont
     extraites par pattern matching sur les textes qui suivent.
     """
@@ -70,14 +70,27 @@ class _MBCertifiedParser(HTMLParser):
         super().__init__()
         self.ads = []
         self._cur = {}
+        self._in_dealer_span = False   # capture du bloc vendeur (2 spans)
+        self._dealer_parts   = []      # [nom_concession, cp_ville]
 
     def handle_starttag(self, tag, attrs):
+        attrs_dict = dict(attrs)
+
+        # Détection du bloc vendeur via classe CSS "vc-vehicle-attribute-text"
+        # Structure : <span class="vc-vehicle-attribute-text ..."><span>NOM</span></span>
+        #             <span class="vc-vehicle-attribute-text ...">CP VILLE</span>
+        if tag == "span" and "vehicle_ref" in self._cur and "vendeur" not in self._cur:
+            cls = attrs_dict.get("class", "")
+            if "vc-vehicle-attribute-text" in cls and "vc-vat-light" in cls:
+                self._in_dealer_span = True
+                return
+
         if tag != "a":
             return
-        attrs_dict = dict(attrs)
         href = attrs_dict.get("href", "")
-        # Lien détail : /vehicle?1262+Mercedes-Benz+C+300+e&vehicle=18904594&...
-        m = re.search(r"/vehicle\?([^&\s]+).*?vehicle=(\d+)", href)
+        # Lien détail : vehicle?1262+Mercedes-Benz+C+300+e&vehicle=18904594&...
+        # NB: pas de slash initial dans le HTML réel (découvert en prod)
+        m = re.search(r"vehicle\?([^&\s]+).*?vehicle=(\d+)", href)  # pas de slash initial
         if m:
             raw_id      = m.group(1)      # "1262+Mercedes-Benz+C+300+e"
             vehicle_ref = m.group(2)      # "18904594"
@@ -98,9 +111,25 @@ class _MBCertifiedParser(HTMLParser):
                 ),
             }
 
+    def handle_endtag(self, tag):
+        if tag == "span" and self._in_dealer_span:
+            self._in_dealer_span = False
+            # Quand on a 2 parties, on assemble le vendeur complet
+            if len(self._dealer_parts) >= 2 and "vendeur" not in self._cur:
+                self._cur["vendeur"] = " ".join(p for p in self._dealer_parts if p)
+                self._dealer_parts = []
+
     def handle_data(self, data):
         data = data.strip()
-        if not data or "vehicle_ref" not in self._cur:
+        if not data:
+            return
+
+        # Capture vendeur (spans vc-vehicle-attribute-text)
+        if self._in_dealer_span and "vehicle_ref" in self._cur and "vendeur" not in self._cur:
+            self._dealer_parts.append(data)
+            return
+
+        if "vehicle_ref" not in self._cur:
             return
 
         # Prix : "39 750 €"
@@ -133,12 +162,7 @@ class _MBCertifiedParser(HTMLParser):
         if m and "puissance_ch" not in self._cur:
             self._cur["puissance_ch"] = int(m.group(1))
 
-        # Vendeur : "BPM CARS ALENÇON 61000 CERISÉ"
-        m = re.match(r"^([A-ZÉÈÀÂÙÎÔÊÄËÏÜÙŒÇ][A-ZÉÈÀÂÙÎÔÊÄËÏÜÙŒÇ0-9\s\-\'\.]+)\s+(\d{5})\s+(.+)$", data)
-        if m and "vendeur" not in self._cur and len(data) > 8:
-            self._cur["vendeur"] = data
-            self._cur["cp"]      = m.group(2)
-            self._cur["ville"]   = m.group(3).strip()
+        # Vendeur : capturé via handle_endtag (spans vc-vehicle-attribute-text)
 
     def _flush(self):
         """Sauvegarde la fiche courante si elle contient les champs minimaux."""
@@ -178,7 +202,8 @@ def _fetch(url: str) -> str:
 
 
 def _total_annonces(html: str) -> int:
-    m = re.search(r"(\d+)\s+véhicule", html)
+    # "véhicule" peut arriver encodé en entité HTML (&#233;hicule)
+    m = re.search(r"(\d+)\s+v(?:é|&#233;|&eacute;)hicule", html)
     return int(m.group(1)) if m else 0
 
 
