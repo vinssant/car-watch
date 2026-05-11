@@ -266,7 +266,12 @@ async function init(){
     const fs=a.first_seen_at||a.premiere_vue;
     const isNew=fs&&(now-new Date(fs).getTime())<86400000;
     const badgeNew=isNew?'<span class="badge badge-new" style="margin-left:.4rem">NEW</span>':"";
-    const motifBtns=MOTIFS.map(m=>`<button class="motif-btn" onclick="event.preventDefault();event.stopPropagation();archiver('${adId}','${(a.url||"").replace(/'/g,"")}','${m.key}','${m.label.replace(/'/g,"")}','${(a.titre||"").replace(/'/g,"").replace(/"/g,"")}')">${m.label}</button>`).join("");
+    const safeUrl=(a.url||"").replace(/['"]/g,"");
+    const safeTitre=(a.titre||"").replace(/['"]/g,"");
+    const motifBtns=MOTIFS.map(m=>{
+      const safeLabel=m.label.replace(/['"]/g,"");
+      return `<button class="motif-btn" onclick="event.preventDefault();event.stopPropagation();archiver('${adId}','${safeUrl}','${m.key}','${safeLabel}','${safeTitre}')">${m.label}</button>`;
+    }).join("");
     const dateVue=fs?` &middot; <span style="color:var(--text-dim)">vu le ${new Date(fs).toLocaleDateString("fr-FR")}</span>`:"";
     return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}" data-ad-id="${adId}" style="animation-delay:${i*.04}s;padding-bottom:2.75rem"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div><div class="archive-btn">${motifBtns}</div></a>`;
   }).join("");}
