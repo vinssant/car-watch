@@ -364,7 +364,7 @@ async function init(){
     const s=a.score_total||0,cl=sCls(s);
     // adId : utiliser l'id du seen_ads.json en priorité
     // Fallback : hash simple sur l'URL complète (pas tronqué)
-    const adId=a.id||("url_"+btoa(unescape(encodeURIComponent(a.url||""))).replace(/[^a-zA-Z0-9]/g,"").slice(0,24));
+    const adId=a.id||("url_"+btoa(unescape(encodeURIComponent(a.url||""))).replace(/[^a-zA-Z0-9]/g,""));
     const toit=a.toit_ouvrant===true?'<span class="chip chip-ok">Toit \u2713</span>':a.toit_ouvrant===false?'<span class="chip">Toit \u2717</span>':'<span class="chip">Toit ?</span>';
     // Badges confiance vendeur
     const confBadges=[];
