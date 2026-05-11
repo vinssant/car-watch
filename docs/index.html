@@ -44,11 +44,6 @@ h1 small{display:block;font-size:.38em;font-weight:500;letter-spacing:.05em;colo
 .card-source{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);margin-top:.2rem}
 .card-price{font-family:var(--mono);font-size:1.2rem;font-weight:500;white-space:nowrap;color:var(--accent)}
 .card-price.baisse{color:#4ade80}
-.card-baisse{border-left-color:#4ade80!important;background:linear-gradient(135deg,rgba(74,222,128,.04) 0%,transparent 60%)!important}
-.prix-block{display:flex;flex-direction:column;align-items:flex-end;gap:.15rem}
-.prix-ancien{font-family:var(--mono);font-size:.72rem;color:var(--text-dim);text-decoration:line-through;opacity:.7}
-.badge-baisse{display:inline-flex;align-items:center;gap:.25rem;font-family:var(--mono);font-size:.6rem;font-weight:600;padding:2px 7px;border-radius:2px;background:rgba(74,222,128,.15);color:#4ade80;letter-spacing:.04em;animation:flashGreen 2s ease-in-out 3}
-@keyframes flashGreen{0%,100%{background:rgba(74,222,128,.15)}50%{background:rgba(74,222,128,.35)}}
 .card-bottom{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
 .badge{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border-radius:2px;letter-spacing:.05em}
 .badge-urgent{background:rgba(255,77,109,.15);color:var(--urgent)}.badge-alerte{background:rgba(255,167,38,.15);color:var(--alerte)}.badge-info{background:rgba(79,195,247,.15);color:var(--info)}.badge-faible{background:rgba(255,255,255,.05);color:var(--text-dim)}
@@ -58,12 +53,24 @@ h1 small{display:block;font-size:.38em;font-weight:500;letter-spacing:.05em;colo
 .sidebar{display:flex;flex-direction:column;gap:1.5rem}
 .sidebar-card{background:var(--surface);border:1px solid var(--border);padding:1.25rem}
 .sidebar-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;color:var(--text-dim)}
-.suivi-item{padding:.75rem 0;border-bottom:1px solid var(--border)}.suivi-item:last-child{border-bottom:none}
-.suivi-statut{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;padding:2px 6px;margin-bottom:.4rem;display:inline-block}
-.statut-priorite{background:rgba(255,77,109,.2);color:var(--urgent)}.statut-contacter{background:rgba(255,167,38,.2);color:var(--alerte)}.statut-cours{background:rgba(79,195,247,.2);color:var(--info)}.statut-visite{background:rgba(200,245,100,.2);color:var(--accent)}
-.suivi-titre{font-size:.82rem;font-weight:600;line-height:1.3;margin-bottom:.25rem}
-.suivi-meta{font-family:var(--mono);font-size:.65rem;color:var(--text-dim)}
-.suivi-notes{font-size:.72rem;color:var(--text-dim);margin-top:.3rem;font-style:italic}
+/* Statuts inline sur les cartes */
+.card-statut-bar{display:flex;align-items:center;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+.statut-select{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;padding:3px 8px;border-radius:2px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);cursor:pointer;outline:none;transition:border-color .2s}
+.statut-select:focus{border-color:var(--accent)}
+.statut-select.s-retenue{background:rgba(200,245,100,.12);color:var(--accent);border-color:rgba(200,245,100,.3)}
+.statut-select.s-contacter{background:rgba(255,167,38,.12);color:var(--alerte);border-color:rgba(255,167,38,.3)}
+.statut-select.s-nego{background:rgba(79,195,247,.12);color:var(--info);border-color:rgba(79,195,247,.3)}
+.statut-select.s-final{background:rgba(255,77,109,.15);color:var(--urgent);border-color:rgba(255,77,109,.3)}
+.statut-note{font-family:var(--sans);font-size:.65rem;flex:1;min-width:120px;padding:3px 8px;border-radius:2px;border:1px solid var(--border);background:var(--surface2);color:var(--text);outline:none;transition:border-color .2s}
+.statut-note:focus{border-color:var(--accent)}
+.statut-note::placeholder{color:var(--text-dim)}
+.statut-saved{font-family:var(--mono);font-size:.55rem;color:var(--accent);opacity:0;transition:opacity .3s}
+.statut-display{font-family:var(--mono);font-size:.6rem;padding:2px 7px;border-radius:2px;margin-top:.4rem;display:inline-block}
+.sd-retenue{background:rgba(200,245,100,.12);color:var(--accent)}
+.sd-contacter{background:rgba(255,167,38,.12);color:var(--alerte)}
+.sd-nego{background:rgba(79,195,247,.12);color:var(--info)}
+.sd-final{background:rgba(255,77,109,.15);color:var(--urgent)}
+.statut-comment{font-size:.68rem;color:var(--text-dim);font-style:italic;margin-top:.2rem}
 .source-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.78rem}.source-row:last-child{border-bottom:none}
 .source-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:8px}
 .dot-ok{background:var(--accent)}.dot-warn{background:var(--alerte)}.dot-off{background:var(--border)}
@@ -134,10 +141,7 @@ footer span{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);lette
   </div>
 <div class="toast" id="toast"></div>
   <div class="sidebar">
-    <div class="sidebar-card">
-      <div class="sidebar-title">&#x1F4CC; Suivi manuel</div>
-      <div id="suivi-container"><div class="loading" style="padding:1.5rem"><div class="spinner"></div></div></div>
-    </div>
+
     <div class="sidebar-card">
       <div class="sidebar-title">&#x1F50D; Sources</div>
       <div class="source-row"><span><span class="source-dot dot-ok"></span>Autoscout24 NAS</span><span class="source-count">7h30</span></div>
@@ -229,12 +233,12 @@ async function archiver(adId, adUrl, motifKey, motifLabel, titre){
     if(!localArchived.includes(adUrl)) localArchived.push(adUrl);
     localStorage.setItem("archived_urls", JSON.stringify(localArchived));
     showToast("✓ Archivé : "+motifLabel);
-    // Supprimer la carte immédiatement du DOM
+    // Supprimer la carte immédiatement du DOM puis recharger les stats
     document.querySelectorAll(".card").forEach(el=>{
       if(el.dataset.adId===adId||el.href===adUrl){
         el.style.transition="opacity .3s";
         el.style.opacity="0";
-        setTimeout(()=>el.remove(), 300);
+        setTimeout(()=>{ el.remove(); init(); }, 350);
       }
     });
   } else {
@@ -243,6 +247,65 @@ async function archiver(adId, adUrl, motifKey, motifLabel, titre){
   }
 }
 const fmtP=p=>p?new Intl.NumberFormat("fr-FR").format(p)+" €":"?";
+
+// ── Statuts inline ───────────────────────────────────────────────────────────
+const STATUTS=[
+  {key:"",          label:"— Aucun statut",  cls:""},
+  {key:"retenue",   label:"⭐ Retenue",       cls:"s-retenue"},
+  {key:"contacter", label:"📞 À contacter",   cls:"s-contacter"},
+  {key:"nego",      label:"💬 Négo en cours", cls:"s-nego"},
+  {key:"final",     label:"🏁 Final step",    cls:"s-final"},
+];
+const STATUT_DISPLAY={
+  retenue:  {label:"⭐ Retenue",       cls:"sd-retenue"},
+  contacter:{label:"📞 À contacter",   cls:"sd-contacter"},
+  nego:     {label:"💬 Négo en cours", cls:"sd-nego"},
+  final:    {label:"🏁 Final step",    cls:"sd-final"},
+};
+function getStatuts(){return JSON.parse(localStorage.getItem("ad_statuts")||"{}");}
+function saveStatut(adId, key, note){
+  const s=getStatuts();
+  if(!key && !note){delete s[adId];}
+  else{s[adId]={key,note,updatedAt:new Date().toISOString()};}
+  localStorage.setItem("ad_statuts",JSON.stringify(s));
+}
+function renderStatutBar(adId){
+  const s=getStatuts()[adId]||{};
+  const opts=STATUTS.map(st=>`<option value="${st.key}" ${s.key===st.key?"selected":""}>${st.label}</option>`).join("");
+  return `<div class="card-statut-bar" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+    <select class="statut-select ${s.key?'s-'+s.key:''}" onchange="onStatutChange(event,'${adId}')" onclick="event.preventDefault();event.stopPropagation()">
+      ${opts}
+    </select>
+    <input class="statut-note" type="text" placeholder="Commentaire libre…" value="${(s.note||'').replace(/"/g,'&quot;')}"
+      oninput="onNoteChange(event,'${adId}')" onclick="event.preventDefault();event.stopPropagation()">
+    <span class="statut-saved" id="saved-${adId}">✓ sauvegardé</span>
+  </div>`;
+}
+function onStatutChange(e,adId){
+  e.stopPropagation();
+  const sel=e.target;
+  const key=sel.value;
+  STATUTS.forEach(st=>sel.classList.remove('s-'+st.key));
+  if(key) sel.classList.add('s-'+key);
+  const note=sel.closest('.card-statut-bar').querySelector('.statut-note').value;
+  saveStatut(adId,key,note);
+  flashSaved(adId);
+}
+function onNoteChange(e,adId){
+  e.stopPropagation();
+  const note=e.target.value;
+  const key=e.target.closest('.card-statut-bar').querySelector('.statut-select').value;
+  saveStatut(adId,key,note);
+  flashSaved(adId);
+}
+let _saveTimer={};
+function flashSaved(adId){
+  const el=document.getElementById('saved-'+adId);
+  if(!el) return;
+  clearTimeout(_saveTimer[adId]);
+  el.style.opacity='1';
+  _saveTimer[adId]=setTimeout(()=>el.style.opacity='0',1500);
+}
 const fmtK=k=>k?new Intl.NumberFormat("fr-FR").format(k)+" km":"?";
 function sColor(s){return s>=85?"var(--urgent)":s>=70?"var(--alerte)":s>=50?"var(--info)":"var(--border)"}
 function sCls(s){return s>=85?"urgent":s>=70?"alerte":s>=50?"info":"faible"}
@@ -277,11 +340,12 @@ async function init(){
   const hist=[...(Array.isArray(nH)?nH:[]),...(Array.isArray(gH)?gH:[])];
   const px=ads.map(a=>a.prix).filter(Boolean);
   const km=ads.map(a=>a.km).filter(Boolean);
-  const srcs=new Set(ads.map(a=>a.source_id).filter(Boolean));
+  // Sources = nombre de dot-ok dans la sidebar (sources réellement actives)
+  const nbSources=document.querySelectorAll(".dot-ok").length||new Set(ads.map(a=>a.source_id).filter(Boolean)).size;
   document.getElementById("stat-total").textContent=ads.length||"—";
   document.getElementById("stat-prix-moy").textContent=px.length?Math.round(px.reduce((s,v)=>s+v,0)/px.length).toLocaleString("fr-FR")+" €":"—";
   document.getElementById("stat-km-moy").textContent=km.length?Math.round(km.reduce((s,v)=>s+v,0)/km.length).toLocaleString("fr-FR"):"—";
-  document.getElementById("stat-sources").textContent=srcs.size||"—";
+  document.getElementById("stat-sources").textContent=nbSources||"—";
   if(px.length){document.getElementById("t-prix").textContent=fmtP(Math.round(px.reduce((s,v)=>s+v,0)/px.length));document.getElementById("t-min").textContent=fmtP(Math.min(...px));document.getElementById("t-max").textContent=fmtP(Math.max(...px));}
   if(km.length)document.getElementById("t-km").textContent=fmtK(Math.round(km.reduce((s,v)=>s+v,0)/km.length));
   document.getElementById("t-baisses").textContent=hist.filter(e=>e&&e.event==="BAISSE_PRIX").length;
@@ -295,11 +359,7 @@ async function init(){
     // Fallback : hash simple sur l'URL complète (pas tronqué)
     const adId=a.id||("url_"+encodeURIComponent(a.url||"").slice(0,40));
     const toit=a.toit_ouvrant===true?'<span class="chip chip-ok">Toit \u2713</span>':a.toit_ouvrant===false?'<span class="chip">Toit \u2717</span>':'<span class="chip">Toit ?</span>';
-    const isBaisse=a.prix_baisse&&a.prix_precedent;
-    const diffPct=isBaisse&&a.prix_variation_pct?Math.abs(a.prix_variation_pct).toFixed(1):'';
-    const ph=isBaisse
-      ?`<div class="prix-block"><span class="badge-baisse">&#x25BC; -${diffPct}%</span><span class="card-price baisse">${fmtP(a.prix)}</span><span class="prix-ancien">${fmtP(a.prix_precedent)}</span></div>`
-      :`<span class="card-price">${fmtP(a.prix)}</span>`;
+    const ph=a.prix_baisse&&a.prix_precedent?`<span class="card-price baisse">${fmtP(a.prix)}</span>`:`<span class="card-price">${fmtP(a.prix)}</span>`;
     const fs=a.first_seen_at||a.premiere_vue;
     const isNew=fs&&(now-new Date(fs).getTime())<86400000;
     const badgeNew=isNew?'<span class="badge badge-new" style="margin-left:.4rem">NEW</span>':"";
@@ -310,7 +370,7 @@ async function init(){
       return `<button class="motif-btn" onclick="event.preventDefault();event.stopPropagation();archiver('${adId}','${safeUrl}','${m.key}','${safeLabel}','${safeTitre}')">${m.label}</button>`;
     }).join("");
     const dateVue=fs?` &middot; <span style="color:var(--accent);opacity:.7;font-size:.6rem">vu le ${new Date(fs).toLocaleDateString("fr-FR")}</span>`:"";
-    return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}${isBaisse?' card-baisse':''}" data-ad-id="${adId}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div><div class="archive-btn">${motifBtns}</div></a>`;
+    return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}" data-ad-id="${adId}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div>${renderStatutBar(adId)}<div class="archive-btn">${motifBtns}</div></a>`;
   }).join("");}
 
   const ac=document.getElementById("archived-cards");
@@ -325,19 +385,6 @@ async function init(){
     localStorage.setItem("archived_urls", JSON.stringify(remaining));
   }
   
-  const sc=document.getElementById("suivi-container");
-  if(py){
-    const sects=py.split('"id"').slice(1);
-    const items=[];
-    for(const sec of sects){
-      const g=k=>{const r=new RegExp(`"${k}"\\s*:\\s*(?:"([^"]*)"|(None|True|False|\\d+))`);const x=sec.match(r);if(!x)return null;if(x[1]!==undefined)return x[1];if(x[2]==="None")return null;return x[2];};
-      const st=g("statut");if(!st||st==="PASSEE"||st==="ECARTEE")continue;
-      const t=g("titre"),v=g("vendeur"),p=g("prix"),k=g("km"),u=g("url"),n=g("notes");if(!t)continue;
-      const sc2={PRIORITE_ABSOLUE:"statut-priorite",A_CONTACTER:"statut-contacter",CONTACT_EN_COURS:"statut-cours",VISITE_PLANIFIEE:"statut-visite",OFFRE_FAITE:"statut-visite",A_VERIFIER:"statut-contacter"}[st]||"";
-      items.push(`<div class="suivi-item"><a href="${u||"#"}" target="_blank" style="text-decoration:none;color:inherit"><span class="suivi-statut ${sc2}">${st}</span><div class="suivi-titre">${t}</div><div class="suivi-meta">${v||""} &middot; ${p?fmtP(parseInt(p)):"?"} &middot; ${k?fmtK(parseInt(k)):"?"}</div>${n?`<div class="suivi-notes">${n}</div>`:""}</a></div>`);
-    }
-    sc.innerHTML=items.length?items.join(""):"<div style=\"font-size:.75rem;color:var(--text-dim);padding:.5rem 0\">Aucun suivi actif</div>";
-  }else{sc.innerHTML="<div class=\"empty\" style=\"padding:1rem\">Non disponible</div>";}
   const nowDisplay=new Date().toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
   document.getElementById("last-update").textContent="Actualisé le "+nowDisplay;
   document.getElementById("footer-date").textContent="Données GitHub · "+nowDisplay;
