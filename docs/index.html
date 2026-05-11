@@ -297,9 +297,9 @@ async function init(){
     }
     sc.innerHTML=items.length?items.join(""):"<div style=\"font-size:.75rem;color:var(--text-dim);padding:.5rem 0\">Aucun suivi actif</div>";
   }else{sc.innerHTML="<div class=\"empty\" style=\"padding:1rem\">Non disponible</div>";}
-  const now=new Date().toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-  document.getElementById("last-update").textContent="Actualisé le "+now;
-  document.getElementById("footer-date").textContent="Données GitHub · "+now;
+  const nowDisplay=new Date().toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+  document.getElementById("last-update").textContent="Actualisé le "+nowDisplay;
+  document.getElementById("footer-date").textContent="Données GitHub · "+nowDisplay;
 }
 init();setInterval(init,5*60*1000);
 </script>
