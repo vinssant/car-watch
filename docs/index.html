@@ -48,6 +48,13 @@ h1 small{display:block;font-size:.38em;font-weight:500;letter-spacing:.05em;colo
 .badge{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border-radius:2px;letter-spacing:.05em}
 .badge-urgent{background:rgba(255,77,109,.15);color:var(--urgent)}.badge-alerte{background:rgba(255,167,38,.15);color:var(--alerte)}.badge-info{background:rgba(79,195,247,.15);color:var(--info)}.badge-faible{background:rgba(255,255,255,.05);color:var(--text-dim)}
 .chip{font-size:.68rem;color:var(--text-dim);font-family:var(--mono)}.chip-ok{color:var(--accent)}
+.badge-confiance{display:inline-flex;align-items:center;gap:.25rem;font-size:.6rem;font-family:var(--mono);padding:2px 6px;border-radius:2px;margin-right:.25rem}
+.bc-certified{background:rgba(200,245,100,.1);color:var(--accent);border:1px solid rgba(200,245,100,.2)}
+.bc-entretien{background:rgba(79,195,247,.08);color:var(--info);border:1px solid rgba(79,195,247,.15)}
+.bc-main{background:rgba(255,255,255,.05);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.bc-particulier{background:rgba(255,167,38,.08);color:var(--alerte);border:1px solid rgba(255,167,38,.15)}
+.bc-nogarantie{background:rgba(255,77,109,.08);color:var(--urgent);border:1px solid rgba(255,77,109,.15)}
+.confiance-row{margin-top:.4rem;display:flex;flex-wrap:wrap;gap:.2rem}
 .score-bar{height:2px;background:var(--border);border-radius:1px;margin-top:.75rem;overflow:hidden}
 .score-fill{height:100%;border-radius:1px}
 .sidebar{display:flex;flex-direction:column;gap:1.5rem}
@@ -359,6 +366,14 @@ async function init(){
     // Fallback : hash simple sur l'URL complète (pas tronqué)
     const adId=a.id||("url_"+btoa(unescape(encodeURIComponent(a.url||""))).replace(/[^a-zA-Z0-9]/g,"").slice(0,24));
     const toit=a.toit_ouvrant===true?'<span class="chip chip-ok">Toit \u2713</span>':a.toit_ouvrant===false?'<span class="chip">Toit \u2717</span>':'<span class="chip">Toit ?</span>';
+    // Badges confiance vendeur
+    const confBadges=[];
+    if(a.source_id==="mercedes_certified") confBadges.push('<span class="badge-confiance bc-certified">🏆 MB Certified</span>');
+    if(a.entretien_constructeur===true) confBadges.push('<span class="badge-confiance bc-entretien">🔧 Entretien MB</span>');
+    if(a.premiere_main===true) confBadges.push('<span class="badge-confiance bc-main">📋 1ère main</span>');
+    if(a.premiere_main===false||(a.vendeur&&a.vendeur.toLowerCase().includes("pro"))&&a.source_id!=="mercedes_certified") confBadges.push('<span class="badge-confiance bc-particulier">👤 Pro</span>');
+    if(!a.garantie_mois) confBadges.push('<span class="badge-confiance bc-nogarantie">⚠️ Sans garantie</span>');
+    const confianceRow=confBadges.length?`<div class="confiance-row">${confBadges.join("")}</div>`:"";
     const ph=a.prix_baisse&&a.prix_precedent?`<span class="card-price baisse">${fmtP(a.prix)}</span>`:`<span class="card-price">${fmtP(a.prix)}</span>`;
     const fs=a.first_seen_at||a.premiere_vue;
     const isNew=fs&&(now-new Date(fs).getTime())<86400000;
@@ -374,7 +389,7 @@ async function init(){
     const ageCls=joursEnLigne===null?"":(joursEnLigne<=3?"chip-age-fresh":joursEnLigne<=14?"chip-age-mid":"chip-age-old");
     const ageLabel=joursEnLigne===null?"":(joursEnLigne===0?"aujourd'hui":joursEnLigne===1?"1 jour":joursEnLigne+"j");
     const ageChip=joursEnLigne!==null?`<span class="chip ${ageCls}" title="En ligne depuis ${joursEnLigne} jour(s)">⏱ ${ageLabel}</span>`:"";
-    return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}" data-ad-id="${adId}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}${ageChip}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div>${renderStatutBar(adId)}<div class="archive-btn">${motifBtns}</div></a>`;
+    return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}" data-ad-id="${adId}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div>${confianceRow}</div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}${ageChip}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div>${renderStatutBar(adId)}<div class="archive-btn">${motifBtns}</div></a>`;
   }).join("");}
 
   const ac=document.getElementById("archived-cards");
