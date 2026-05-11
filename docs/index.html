@@ -210,13 +210,19 @@ async function archiver(adId, adUrl, motifKey, motifLabel, titre){
     }
   );
   if(resp.status===204||resp.ok){
-    showToast("✓ Archivé : "+motifLabel+" — rechargement dans 45s");
-    // Griser la carte concernée immédiatement
+    // Stocker l'URL archivée dans localStorage → disparition immédiate sans attendre GH Actions
+    const localArchived=JSON.parse(localStorage.getItem("archived_urls")||"[]");
+    if(!localArchived.includes(adUrl)) localArchived.push(adUrl);
+    localStorage.setItem("archived_urls", JSON.stringify(localArchived));
+    showToast("✓ Archivé : "+motifLabel);
+    // Supprimer la carte immédiatement du DOM
     document.querySelectorAll(".card").forEach(el=>{
-      if(el.href&&el.href===adUrl) el.style.opacity="0.2";
+      if(el.dataset.adId===adId||el.href===adUrl){
+        el.style.transition="opacity .3s";
+        el.style.opacity="0";
+        setTimeout(()=>el.remove(), 300);
+      }
     });
-    // Recharger après 45s (GH Actions ~10s + CDN GitHub Pages ~30s)
-    setTimeout(()=>init(), 45000);
   } else {
     const err=await resp.json().catch(()=>({}));
     showToast("Erreur "+resp.status+": "+(err.message||"?"), false);
@@ -237,7 +243,12 @@ async function init(){
     fj(RAW+"/data/archived.json"),
   ]);
 
-  const archivedUrls=new Set((Array.isArray(arch)?arch:[]).map(a=>a&&a.url).filter(Boolean));
+  // Fusionner archived.json (GitHub) + localStorage (archivages locaux immédiats)
+  const localArchived=JSON.parse(localStorage.getItem("archived_urls")||"[]");
+  const archivedUrls=new Set([
+    ...(Array.isArray(arch)?arch:[]).map(a=>a&&a.url).filter(Boolean),
+    ...localArchived
+  ]);
   const archList=Array.isArray(arch)?arch:[];
   const now=Date.now();
 
@@ -280,7 +291,7 @@ async function init(){
       const safeLabel=m.label.replace(/['"]/g,"");
       return `<button class="motif-btn" onclick="event.preventDefault();event.stopPropagation();archiver('${adId}','${safeUrl}','${m.key}','${safeLabel}','${safeTitre}')">${m.label}</button>`;
     }).join("");
-    const dateVue=fs?` &middot; <span style="color:var(--text-dim)">vu le ${new Date(fs).toLocaleDateString("fr-FR")}</span>`:"";
+    const dateVue=fs?` &middot; <span style="color:var(--accent);opacity:.7;font-size:.6rem">vu le ${new Date(fs).toLocaleDateString("fr-FR")}</span>`:"";
     return`<a href="${a.url||"#"}" target="_blank" class="card card-${cl}" data-ad-id="${adId}" style="animation-delay:${i*.04}s"><div class="card-top"><div><span class="badge badge-${cl}">${s}/100</span>${badgeNew}<div class="card-title" style="margin-top:.4rem">${a.titre||"Annonce"}</div><div class="card-source">${a.source||""} &middot; ${a.vendeur||""}${dateVue}</div></div>${ph}</div><div class="card-bottom"><span class="chip">${fmtK(a.km)}</span><span class="chip">${a.annee||"?"}</span>${toit}${a.garantie_mois?`<span class="chip chip-ok">Garantie ${a.garantie_mois}m</span>`:""}${a.region?`<span class="chip">${a.region}</span>`:""}</div><div class="score-bar"><div class="score-fill" style="width:${s}%;background:${sColor(s)}"></div></div><div class="archive-btn">${motifBtns}</div></a>`;
   }).join("");}
 
@@ -290,6 +301,10 @@ async function init(){
     as.style.display="block";
     document.getElementById("archived-label").textContent=`Annonces archiv\u00e9es (${archList.length})`;
     ac.innerHTML=archList.map(a=>`<div class="card-archived"><div class="card-top"><div><span class="card-title" style="font-size:.85rem">${a.titre||a.url||"?"}</span><span class="motif-tag">${a.motif||"?"}</span><div class="card-source" style="margin-top:.25rem">${a.archived_at?new Date(a.archived_at).toLocaleDateString("fr-FR"):""}</div></div><a href="${a.url||"#"}" target="_blank" style="font-family:var(--mono);font-size:.65rem;color:var(--text-dim)">voir \u2192</a></div></div>`).join("");
+    // Nettoyer le localStorage : retirer les URLs déjà dans archived.json (GH Actions a fini)
+    const ghArchivedUrls=new Set(archList.map(a=>a.url).filter(Boolean));
+    const remaining=localArchived.filter(u=>!ghArchivedUrls.has(u));
+    localStorage.setItem("archived_urls", JSON.stringify(remaining));
   }
   
   const sc=document.getElementById("suivi-container");
