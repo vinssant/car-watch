@@ -90,7 +90,7 @@ def _decoder_body(message: dict) -> str:
     return extraire_texte(payload)
 
 
-def _parser_leboncoin(texte: str, html: str, source: str) -> list:
+def _parser_leboncoin(texte: str, html: str, source: str, modele_nom: str = "Break") -> list:
     """Parse un email d'alerte Leboncoin."""
     annonces = []
 
@@ -130,8 +130,8 @@ def _parser_leboncoin(texte: str, html: str, source: str) -> list:
             toit = "toit ouvrant" in bloc.lower() or "panoram" in bloc.lower()
 
             # Titre
-            titre_m = re.search(r'Mercedes[^\n]{0,60}', bloc, re.IGNORECASE)
-            titre = titre_m.group(0).strip() if titre_m else f"C300e Break {annee or '?'}"
+            titre_m = re.search(r'(?:Mercedes|BMW)[^\n]{0,60}', bloc, re.IGNORECASE)
+            titre = titre_m.group(0).strip() if titre_m else f"{modele_nom} {annee or '?'}"
 
             annonces.append({
                 "source"           : f"Leboncoin (alerte)",
@@ -190,7 +190,37 @@ def _parser_spoticar(texte: str, source_nom: str) -> list:
     return annonces
 
 
-def _parser_generique(texte: str, source_nom: str) -> list:
+def _parser_leparking(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
+    """Parse un email d'alerte Le Parking."""
+    annonces = []
+    urls = re.findall(r'https?://www\.leparking\.fr/voiture-occasion/[^\s<>"&]+\.html', texte)
+    for url in urls[:10]:
+        try:
+            prix_m  = re.search(r'(\d[\d\s]+)\s*€', texte)
+            km_m    = re.search(r'(\d[\d\s]+)\s*km', texte, re.IGNORECASE)
+            annee_m = re.search(r'(202[0-9])', texte)
+            toit    = "toit ouvrant" in texte.lower() or "panoram" in texte.lower()
+            prix    = int(re.sub(r'\s', '', prix_m.group(1))) if prix_m else None
+            km      = int(re.sub(r'\s', '', km_m.group(1))) if km_m else None
+            annee   = int(annee_m.group(1)) if annee_m else None
+            if not prix:
+                continue
+            annonces.append({
+                "source": f"Le Parking (alerte)", "source_id": SOURCE_ID,
+                "fiabilite_source": FIABILITE,
+                "titre": f"{modele_nom} {annee or '?'} via alerte Le Parking",
+                "vendeur": "Via alerte Le Parking", "url": url,
+                "prix": prix, "annee": annee, "km": km,
+                "toit_ouvrant": True if toit else None,
+                "garantie_mois": None, "premiere_main": None,
+                "entretien_constructeur": None,
+            })
+        except Exception:
+            continue
+    return annonces
+
+
+def _parser_generique(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
     """Parser générique pour autres sources d'alertes."""
     annonces = []
 
@@ -228,7 +258,7 @@ def _parser_generique(texte: str, source_nom: str) -> list:
 
 
 
-def _parser_autoscout24(texte: str, source_nom: str) -> list:
+def _parser_autoscout24(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
     """Parse un email d'alerte Autoscout24."""
     annonces = []
     # AS24 envoie des liens du type /offres/mercedes-benz-c-300-...
@@ -247,7 +277,7 @@ def _parser_autoscout24(texte: str, source_nom: str) -> list:
             annonces.append({
                 "source": "Autoscout24 (alerte)", "source_id": SOURCE_ID,
                 "fiabilite_source": FIABILITE,
-                "titre": f"C300e Break {annee or '?'} via alerte AS24",
+                "titre": f"{modele_nom} {annee or '?'} via alerte AS24",
                 "vendeur": "Via alerte Autoscout24", "url": url,
                 "prix": prix, "annee": annee, "km": km,
                 "toit_ouvrant": True if toit else None,
@@ -259,7 +289,7 @@ def _parser_autoscout24(texte: str, source_nom: str) -> list:
     return annonces
 
 
-def _parser_lacentrale(texte: str, source_nom: str) -> list:
+def _parser_lacentrale(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
     """Parse un email d'alerte La Centrale."""
     annonces = []
     urls = re.findall(r'https?://www\.lacentrale\.fr/auto-occasion-annonce-[^\s<>"&]+', texte)
@@ -276,7 +306,7 @@ def _parser_lacentrale(texte: str, source_nom: str) -> list:
             annonces.append({
                 "source": "La Centrale (alerte)", "source_id": SOURCE_ID,
                 "fiabilite_source": FIABILITE,
-                "titre": f"C300e Break {annee or '?'} via alerte La Centrale",
+                "titre": f"{modele_nom} {annee or '?'} via alerte La Centrale",
                 "vendeur": "Via alerte La Centrale", "url": url,
                 "prix": prix, "annee": annee, "km": km,
                 "toit_ouvrant": None, "garantie_mois": None,
@@ -297,6 +327,7 @@ def scraper(modele: dict = None) -> list:
         return []
 
     criteres   = modele.get("criteres", {}) if modele else {}
+    modele_nom = modele.get("nom", "Break") if modele else "Break"
     annee_min  = criteres.get("annee_min", 2023)
     budget_max = criteres.get("budget_max", 42000)
     km_max     = criteres.get("km_max", 65000)
@@ -312,7 +343,7 @@ def scraper(modele: dict = None) -> list:
         # Rechercher emails d'alertes des dernières 48h
         senders_query = " OR ".join([f"from:{s}" for s in SENDERS_ALERTES.keys()])
         # Aussi chercher par sujet pour capturer les alertes "Mes recherches"
-        query = f"({senders_query}) newer_than:2d subject:(alerte OR nouvelle OR annonce OR Mercedes OR C300)"
+        query = f"({senders_query}) newer_than:2d subject:(alerte OR nouvelle OR annonce OR Mercedes OR C300 OR BMW OR 330e OR série)"
 
         result  = service.users().messages().list(userId="me", q=query, maxResults=20).execute()
         messages = result.get("messages", [])
@@ -343,15 +374,17 @@ def scraper(modele: dict = None) -> list:
 
                 # Parser selon la source
                 if "leboncoin" in from_addr:
-                    nouvelles = _parser_leboncoin(texte, html, source_nom)
+                    nouvelles = _parser_leboncoin(texte, html, source_nom, modele_nom)
                 elif "autoscout24" in from_addr:
-                    nouvelles = _parser_autoscout24(texte, source_nom)
+                    nouvelles = _parser_autoscout24(texte, source_nom, modele_nom)
                 elif "lacentrale" in from_addr:
-                    nouvelles = _parser_lacentrale(texte, source_nom)
+                    nouvelles = _parser_lacentrale(texte, source_nom, modele_nom)
+                elif "leparking" in from_addr:
+                    nouvelles = _parser_leparking(texte, source_nom, modele_nom)
                 elif "spoticar" in from_addr or "stellantis" in from_addr:
                     nouvelles = _parser_spoticar(texte, source_nom)
                 else:
-                    nouvelles = _parser_generique(texte, source_nom)
+                    nouvelles = _parser_generique(texte, source_nom, modele_nom)
 
                 # Filtrer selon critères
                 for a in nouvelles:
