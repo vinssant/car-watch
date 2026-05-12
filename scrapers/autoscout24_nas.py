@@ -31,7 +31,7 @@ HEADERS = {
     "Accept"         : "text/html,application/xhtml+xml",
 }
 
-BREAKS_TYPES = ["wagon", "t-modell", "estate", "combi", "break", "sw"]
+BREAKS_TYPES = ["wagon", "t-modell", "estate", "combi", "break", "sw", "touring"]
 
 
 def _fetch_html(url: str) -> str:
