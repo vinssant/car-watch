@@ -44,6 +44,8 @@ SENDERS_ALERTES = {
     "no-reply@autoscout24.fr"                     : "Autoscout24",
     # Le Parking
     "alertes@leparking.fr"                        : "Le Parking",
+    # Autosphere
+    "contact@autosphere.fr"                       : "Autosphere",
     # Spoticar (Stellantis) — expéditeurs confirmés
     "info@spoticar.stellantis.com"                : "Spoticar",
     "bounce.web.stellantis.com"                   : "Spoticar",  # domaine de routage
