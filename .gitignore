@@ -22,3 +22,5 @@ Thumbs.db
 # Reports générés localement
 reports/*.html
 reports/*.pdf
+@eaDir/
+@tmp/
