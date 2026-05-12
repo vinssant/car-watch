@@ -7,5 +7,68 @@
     "km": 54611,
     "titre": "Mercedes-Benz C 300 e",
     "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "6531f21ad4e4",
+    "date": "2026-05-12T11:30:20.039791",
+    "event": "APPARITION",
+    "prix": 39980,
+    "km": 18822,
+    "titre": "BMW Série 3 PHEV Touring ? · 18 822 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "65a78ee4ea9e",
+    "date": "2026-05-12T11:30:20.039791",
+    "event": "APPARITION",
+    "prix": 29480,
+    "km": 31800,
+    "titre": "BMW Série 3 PHEV Touring ? · 31 800 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "0c8bd1084c98",
+    "date": "2026-05-12T11:30:20.039791",
+    "event": "APPARITION",
+    "prix": 38990,
+    "km": 38965,
+    "titre": "BMW Série 3 PHEV Touring ? · 38 965 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "77ffda143320",
+    "date": "2026-05-12T11:30:20.039791",
+    "event": "APPARITION",
+    "prix": 37490,
+    "km": 42600,
+    "titre": "BMW Série 3 PHEV Touring ? · 42 600 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "1c96532211f6",
+    "date": "2026-05-12T11:30:20.039791",
+    "event": "APPARITION",
+    "prix": 37799,
+    "km": 47217,
+    "titre": "BMW Série 3 PHEV Touring ? · 47 217 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "a75ed5e0969d",
+    "date": "2026-05-12T11:30:20.039791",
+    "event": "APPARITION",
+    "prix": 39699,
+    "km": 33746,
+    "titre": "BMW Série 3 PHEV Touring ? · 33 746 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "714ee44a2494",
+    "date": "2026-05-12T11:30:20.039791",
+    "event": "APPARITION",
+    "prix": 40999,
+    "km": 38578,
+    "titre": "BMW Série 3 PHEV Touring ? · 38 578 km",
+    "source": "Autoscout24"
   }
 ]

@@ -431,5 +431,66 @@
     "prix": 38400,
     "score": 38.2,
     "date": "2026-05-10T23:00:08.078792"
+  },
+  {
+    "id": "86b819398512",
+    "date": "2026-05-11T07:30:14.993919",
+    "event": "DISPARITION",
+    "titre": "C300e Break AMG LINE 2024 · 52 012 km",
+    "prix": 39990
+  },
+  {
+    "id": "09fd54f0f223",
+    "date": "2026-05-11T13:15:54.369569",
+    "event": "APPARITION",
+    "prix": 41900,
+    "km": 61964,
+    "titre": "Mercedes-Benz C 300 e Hybrid AMG Line",
+    "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "030f79cdc37a",
+    "date": "2026-05-11T13:15:54.369569",
+    "event": "APPARITION",
+    "prix": 39750,
+    "km": 54611,
+    "titre": "Mercedes-Benz C 300 e",
+    "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "e1cf07028162",
+    "date": "2026-05-11T13:15:54.369569",
+    "event": "APPARITION",
+    "prix": 41999,
+    "km": 60032,
+    "titre": "Mercedes-Benz C 300 e Hybrid AMG Line",
+    "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "030f79cdc37a",
+    "date": "2026-05-12T07:30:15.411932",
+    "event": "APPARITION",
+    "prix": 39750,
+    "km": 54611,
+    "titre": "Mercedes-Benz C 300 e",
+    "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "030f79cdc37a",
+    "date": "2026-05-12T09:13:41.892828",
+    "event": "APPARITION",
+    "prix": 39750,
+    "km": 54611,
+    "titre": "Mercedes-Benz C 300 e",
+    "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "030f79cdc37a",
+    "date": "2026-05-12T09:22:13.441138",
+    "event": "APPARITION",
+    "prix": 39750,
+    "km": 54611,
+    "titre": "Mercedes-Benz C 300 e",
+    "source": "Mercedes-Benz Certified"
   }
 ]
