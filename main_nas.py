@@ -28,7 +28,7 @@ SCRAPERS_NAS = {
 }
 
 # Sources NAS à activer dans chaque modèle
-SOURCES_NAS_IDS = {"leparking", "autoscout24_nas", "autoscout24", "mercedes_certified", "spoticar"}
+SOURCES_NAS_IDS = {"leparking", "autoscout24_nas", "autoscout24", "mercedes_certified", "spoticar", "lacentrale", "leboncoin"}
 
 
 def main():
