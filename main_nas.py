@@ -30,7 +30,7 @@ SCRAPERS_COMMUNS = {
 SCRAPERS_PAR_MODELE = {
     "mercedes_c300e": {
         "mercedes_certified": mercedes_certified_scraper,
-        "spoticar"          : spoticar_scraper,
+        # spoticar: WAF actif même IP résidentielle → alertes email uniquement
     },
     "bmw_3series": {
         # BMW Certified à ajouter quand disponible
