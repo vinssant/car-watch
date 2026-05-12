@@ -6,20 +6,20 @@
 MODELE = {
 
     # ── Identité ─────────────────────────────────────────────
-    "id"          : "bmw_330e",
-    "nom"         : "BMW 330e Touring",
+    "id"          : "bmw_3series",
+    "nom"         : "BMW Série 3 PHEV Touring",
     "actif"       : True,
     "emoji"       : "🚙",
-    "description" : "BMW Série 3 330e Touring PHEV",
+    "description" : "BMW Série 3 Touring PHEV (320e / 330e) — G21",
 
     # ── Critères véhicule ────────────────────────────────────
     "criteres": {
         "marque"           : "BMW",
         "modele"           : "Série 3",
-        "version"          : "330e",
+        "version"          : "320e/330e",
         "carrosserie"      : "break",
         "motorisation"     : "PHEV",
-        "puissance_min_ch" : 250,
+        "puissance_min_ch" : 200,
         "annee_min"        : 2023,
         "annee_max"        : 2026,
         "km_max"           : 60000,

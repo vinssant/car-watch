@@ -139,7 +139,7 @@ footer span{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);lette
 <div class="model-tabs" id="model-tabs">
   <button class="model-tab active" onclick="setModele('all',this)">🔍 Tous les modèles</button>
   <button class="model-tab" onclick="setModele('mercedes_c300e',this)">🚗 Mercedes C300e</button>
-  <button class="model-tab" onclick="setModele('bmw_330e',this)">🚙 BMW 330e</button>
+  <button class="model-tab" onclick="setModele('bmw_3series',this)">🚙 BMW 330e</button>
 </div>
 <div class="main">
   <div>
@@ -339,8 +339,8 @@ async function init(){
     fj(RAW+"/data/mercedes_c300e_nas/ads_history.json"),
     fj(RAW+"/data/mercedes_c300e/seen_ads.json"),
     fj(RAW+"/data/mercedes_c300e/ads_history.json"),
-    fj(RAW+"/data/bmw_330e_nas/seen_ads.json"),
-    fj(RAW+"/data/bmw_330e_nas/ads_history.json"),
+    fj(RAW+"/data/bmw_3series_nas/seen_ads.json"),
+    fj(RAW+"/data/bmw_3series_nas/ads_history.json"),
     fetch(RAW+"/modeles/mercedes_c300e.py").then(r=>r.ok?r.text():"").catch(()=>""),
     fj(RAW+"/data/archived.json"),
   ]);
@@ -355,8 +355,8 @@ async function init(){
   const now=Date.now();
 
   // Taguer chaque source avec son modèle
-  (Array.isArray(bA)?bA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_330e"; });
-  (Array.isArray(bH)?bH:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_330e"; });
+  (Array.isArray(bA)?bA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_3series"; });
+  (Array.isArray(bH)?bH:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_3series"; });
   (Array.isArray(nA)?nA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_c300e"; });
   (Array.isArray(gA)?gA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_c300e"; });
   const allAdsRaw=[...(Array.isArray(nA)?nA:[]),...(Array.isArray(gA)?gA:[]),...(Array.isArray(bA)?bA:[])];

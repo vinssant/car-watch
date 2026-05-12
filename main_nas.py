@@ -32,7 +32,7 @@ SCRAPERS_PAR_MODELE = {
         "mercedes_certified": mercedes_certified_scraper,
         "spoticar"          : spoticar_scraper,
     },
-    "bmw_330e": {
+    "bmw_3series": {
         # BMW Certified à ajouter quand disponible
     },
 }

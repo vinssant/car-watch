@@ -21,7 +21,7 @@ FIABILITE  = 6
 # URLs par modèle — clé = modele["id"]
 SEARCH_URLS = {
     "mercedes_c300e" : "https://www.autoscout24.fr/lst/mercedes-benz/c-300",
-    "bmw_330e"       : "https://www.autoscout24.fr/lst/bmw/s%C3%A9rie-3-%28tous%29",
+    "bmw_3series"    : "https://www.autoscout24.fr/lst/bmw/s%C3%A9rie-3-%28tous%29",
 }
 SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
@@ -158,13 +158,15 @@ def scraper(modele: dict = None) -> list:
     """
     criteres   = modele.get("criteres", {}) if modele else {}
     modele_id  = modele.get("id", "mercedes_c300e") if modele else "mercedes_c300e"
+    modele_id  = "bmw_3series" if modele_id == "bmw_330e" else modele_id  # rétrocompat
     annee_min  = criteres.get("annee_min", 2023)
     budget_max = criteres.get("budget_max", 42000)
     km_max     = criteres.get("km_max", 65000)
 
     base_url = SEARCH_URLS.get(modele_id, SEARCH_URL)
-    if modele_id == "bmw_330e":
-        url = (f"{base_url}?body=5&fuel=2&version0=330&atype=C"
+    if modele_id == "bmw_3series":
+        # body=5=Touring, fuel=2=PHEV, sans version0 pour avoir 320e+330e
+        url = (f"{base_url}?body=5&fuel=2&atype=C"
                f"&fregfrom={annee_min}&priceto={budget_max}&kmto={km_max}"
                f"&ustate=N,U&cy=F&sort=price&desc=0&damaged_listing=exclude")
     else:
