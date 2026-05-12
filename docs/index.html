@@ -23,6 +23,10 @@ h1 small{display:block;font-size:.38em;font-weight:500;letter-spacing:.05em;colo
 .live-dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.model-tabs{display:flex;gap:.5rem;padding:.75rem 2rem;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.model-tab{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;padding:5px 14px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .15s}
+.model-tab:hover{border-color:var(--accent);color:var(--text)}
+.model-tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
 .stat{background:var(--bg);padding:1.5rem 2rem;position:relative;overflow:hidden}
 .stat::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);transform:scaleY(0);transform-origin:bottom;transition:transform .6s cubic-bezier(.16,1,.3,1)}
 .stat:hover::before{transform:scaleY(1)}
@@ -132,6 +136,11 @@ footer span{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);lette
   <div class="stat"><div class="stat-val" id="stat-sources">&#x2014;</div><div class="stat-lbl">Sources actives</div></div>
 </div>
 
+<div class="model-tabs" id="model-tabs">
+  <button class="model-tab active" onclick="setModele('all',this)">🔍 Tous les modèles</button>
+  <button class="model-tab" onclick="setModele('mercedes_c300e',this)">🚗 Mercedes C300e</button>
+  <button class="model-tab" onclick="setModele('bmw_330e',this)">🚙 BMW 330e</button>
+</div>
 <div class="main">
   <div>
     <div class="section-label">Top annonces actives</div>
@@ -317,12 +326,21 @@ const fmtK=k=>k?new Intl.NumberFormat("fr-FR").format(k)+" km":"?";
 function sColor(s){return s>=85?"var(--urgent)":s>=70?"var(--alerte)":s>=50?"var(--info)":"var(--border)"}
 function sCls(s){return s>=85?"urgent":s>=70?"alerte":s>=50?"info":"faible"}
 async function fj(url){try{const r=await fetch(url+"?t="+Date.now());return r.ok?r.json():[];}catch(e){return[];}}
+let _allAdsCache=[];
+function setModele(modele, btn){
+  window._activeModele=modele;
+  document.querySelectorAll(".model-tab").forEach(b=>b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+  init();
+}
 async function init(){
-  const[nA,nH,gA,gH,py,arch]=await Promise.all([
+  const[nA,nH,gA,gH,bA,bH,py,arch]=await Promise.all([
     fj(RAW+"/data/mercedes_c300e_nas/seen_ads.json"),
     fj(RAW+"/data/mercedes_c300e_nas/ads_history.json"),
     fj(RAW+"/data/mercedes_c300e/seen_ads.json"),
     fj(RAW+"/data/mercedes_c300e/ads_history.json"),
+    fj(RAW+"/data/bmw_330e_nas/seen_ads.json"),
+    fj(RAW+"/data/bmw_330e_nas/ads_history.json"),
     fetch(RAW+"/modeles/mercedes_c300e.py").then(r=>r.ok?r.text():"").catch(()=>""),
     fj(RAW+"/data/archived.json"),
   ]);
@@ -336,15 +354,23 @@ async function init(){
   const archList=Array.isArray(arch)?arch:[];
   const now=Date.now();
 
+  // Taguer chaque source avec son modèle
+  (Array.isArray(bA)?bA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_330e"; });
+  (Array.isArray(bH)?bH:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_330e"; });
+  (Array.isArray(nA)?nA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_c300e"; });
+  (Array.isArray(gA)?gA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_c300e"; });
+  const allAdsRaw=[...(Array.isArray(nA)?nA:[]),...(Array.isArray(gA)?gA:[]),...(Array.isArray(bA)?bA:[])];
+  const hist=[...(Array.isArray(nH)?nH:[]),...(Array.isArray(gH)?gH:[]),...(Array.isArray(bH)?bH:[])];
+  const activeModele=window._activeModele||"all";
+  const filteredRaw=activeModele==="all"?allAdsRaw:allAdsRaw.filter(a=>a&&(a.modele_id||"mercedes_c300e")===activeModele);
   const seen=new Set();
-  const ads=[...(Array.isArray(nA)?nA:[]),...(Array.isArray(gA)?gA:[])].filter(a=>{
+  const ads=filteredRaw.filter(a=>{
     if(!a||!a.url||seen.has(a.url))return false;
     seen.add(a.url);
     if(archivedUrls.has(a.url))return false;
     return true;
   }).sort((a,b)=>(b.score_total||0)-(a.score_total||0));
 
-  const hist=[...(Array.isArray(nH)?nH:[]),...(Array.isArray(gH)?gH:[])];
   const px=ads.map(a=>a.prix).filter(Boolean);
   const km=ads.map(a=>a.km).filter(Boolean);
   // Sources = nombre de dot-ok dans la sidebar (sources réellement actives)
