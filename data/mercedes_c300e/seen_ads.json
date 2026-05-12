@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "id": "030f79cdc37a",
+    "source": "Mercedes-Benz Certified",
+    "source_id": "mercedes_certified",
+    "fiabilite_source": 10,
+    "titre": "Mercedes-Benz C 300 e",
+    "vendeur": "BPM CARS ALENÇON 61000 CERISÉ",
+    "url": "https://occasion.mercedes-benz.fr/vehicle?1262+Mercedes-Benz+C+300+e&vehicle=18904594&referrer=vehicles",
+    "prix": 39750,
+    "annee": 2023,
+    "km": 54611,
+    "date_mec": "2023-08-31",
+    "puissance_ch": 313,
+    "toit_ouvrant": true,
+    "garantie_mois": 24,
+    "entretien_constructeur": true,
+    "premiere_main": null,
+    "carrosserie": "Break",
+    "motorisation": "Hybride rechargeable Essence",
+    "scraped_at": "2026-05-12T08:25:27.421996",
+    "modele_id": "mercedes_c300e",
+    "modele_nom": "Mercedes C300e Break",
+    "score_total": 56.0,
+    "score_detail": {
+      "annee": 70.0,
+      "kilometrage": 25.0,
+      "prix_vs_marche": 10.0,
+      "garantie": 100.0,
+      "equipements_cles": 88.0,
+      "fiabilite_source": 100.0
+    },
+    "cote_reference": 34000,
+    "niveau_alerte": "INFO",
+    "emoji_alerte": "🟡",
+    "recommandation": "✅ Garantie solide (24 mois) · ✅ Toit ouvrant confirmé · ✅ Entretien MB confirmé · ⚠️ Kilométrage élevé (54 611 km) · ⚠️ Prix surévalué — négocier",
+    "score_date": "2026-05-12T08:25:33.491710",
+    "derniere_vue": "2026-05-12T08:25:33.491999",
+    "premiere_vue": "2026-05-12T08:25:33.491999",
+    "first_seen_at": "2026-05-12T08:25:33.491999",
+    "est_nouvelle": true
+  }
+]

@@ -242,5 +242,14 @@
     "event": "DISPARITION",
     "titre": "C300e Break ? · ? km",
     "prix": null
+  },
+  {
+    "id": "030f79cdc37a",
+    "date": "2026-05-12T08:25:33.491999",
+    "event": "APPARITION",
+    "prix": 39750,
+    "km": 54611,
+    "titre": "Mercedes-Benz C 300 e",
+    "source": "Mercedes-Benz Certified"
   }
 ]
