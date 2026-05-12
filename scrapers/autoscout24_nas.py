@@ -18,8 +18,12 @@ SOURCE_ID  = "autoscout24_nas"
 SOURCE_NOM = "Autoscout24"
 FIABILITE  = 6
 
-# URL confirmée par tests — retourne C300 hybrides uniquement
-SEARCH_URL = "https://www.autoscout24.fr/lst/mercedes-benz/c-300"
+# URLs par modèle — clé = modele["id"]
+SEARCH_URLS = {
+    "mercedes_c300e" : "https://www.autoscout24.fr/lst/mercedes-benz/c-300",
+    "bmw_330e"       : "https://www.autoscout24.fr/lst/bmw/330e",
+}
+SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
 HEADERS = {
     "User-Agent"     : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
@@ -53,7 +57,7 @@ def _extraire_listings(html: str) -> list:
         return []
 
 
-def _normaliser(item: dict):
+def _normaliser(item: dict, modele_info: dict = None):
     v     = item.get("vehicle", {}) or {}
     p     = item.get("price", {}) or {}
     s     = item.get("seller", {}) or {}
@@ -66,9 +70,9 @@ def _normaliser(item: dict):
     if not is_break:
         return None
 
-    # Filtrer uniquement hybrides
-    fuel = v.get("fuel") or ""
-    if "lectrique" not in fuel and "hybride" not in fuel.lower():
+    # Filtrer uniquement hybrides/PHEV
+    fuel = (v.get("fuel") or "").lower()
+    if "lectrique" not in fuel and "hybride" not in fuel and "phev" not in fuel:
         return None
 
     # Prix
@@ -116,7 +120,8 @@ def _normaliser(item: dict):
     if g:
         garantie = int(g.group(1))
 
-    titre = f"C300e Break {annee or '?'} · {km:,} km".replace(",", " ") if km else f"C300e Break {annee or '?'}"
+    modele_nom = modele_info.get("nom", "Break") if modele_info else "Break"
+    titre = f"{modele_nom} {annee or '?'} · {km:,} km".replace(",", " ") if km else f"{modele_nom} {annee or '?'}"
 
     return {
         "source"              : SOURCE_NOM,
@@ -148,16 +153,17 @@ def _est_eligible(a: dict, criteres: dict) -> bool:
 
 def scraper(modele: dict = None) -> list:
     """
-    Scrape Autoscout24 C300 depuis le NAS (IP résidentielle).
-    URL confirmée : /lst/mercedes-benz/c-300
-    Filtre breaks hybrides en Python.
+    Scrape Autoscout24 depuis le NAS (IP résidentielle).
+    Supporte Mercedes C300e et BMW 330e via SEARCH_URLS.
     """
     criteres   = modele.get("criteres", {}) if modele else {}
+    modele_id  = modele.get("id", "mercedes_c300e") if modele else "mercedes_c300e"
     annee_min  = criteres.get("annee_min", 2023)
     budget_max = criteres.get("budget_max", 42000)
     km_max     = criteres.get("km_max", 65000)
 
-    url = (f"{SEARCH_URL}?fregfrom={annee_min}&priceto={budget_max}"
+    base_url = SEARCH_URLS.get(modele_id, SEARCH_URL)
+    url = (f"{base_url}?fregfrom={annee_min}&priceto={budget_max}"
            f"&kmto={km_max}&ustate=U&cy=F&sort=price&desc=0")
 
     annonces = []
@@ -166,7 +172,7 @@ def scraper(modele: dict = None) -> list:
         listings = _extraire_listings(html)
 
         for item in listings:
-            a = _normaliser(item)
+            a = _normaliser(item, modele)
             if a and _est_eligible(a, criteres):
                 annonces.append(a)
 

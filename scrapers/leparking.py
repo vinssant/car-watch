@@ -19,7 +19,13 @@ SOURCE_NOM = "Le Parking"
 FIABILITE  = 6
 
 BASE_URL   = "https://www.leparking.fr"
-SEARCH_URL = f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e.html"
+
+# URLs par modèle
+SEARCH_URLS = {
+    "mercedes_c300e" : f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e.html",
+    "bmw_330e"       : f"{BASE_URL}/voiture-occasion/bmw-serie-3-break-330e.html",
+}
+SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
 HEADERS = {
     "User-Agent"             : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
@@ -44,7 +50,7 @@ REGIONS_PRIORITAIRES = [
 ]
 
 
-def _extraire_annonces(html: str, criteres: dict) -> list:
+def _extraire_annonces(html: str, criteres: dict, modele_nom: str = "Break") -> list:
     """Parse le HTML du Parking et extrait les annonces."""
     soup    = BeautifulSoup(html, "lxml")
     blocs   = soup.select("li.li-result")
@@ -117,9 +123,8 @@ def _extraire_annonces(html: str, criteres: dict) -> list:
             region = next((r for r in REGIONS_PRIORITAIRES if r in texte.upper()), "")
 
             # Finition / description
-            titre_match = re.search(r"MERCEDES CLASSE C BREAK C 300 E\s*(.{0,40}?)(?:\s+\d|\s+PRO|\s+FAV|\s*$)", texte.upper())
-            finition = titre_match.group(1).strip() if titre_match else ""
-            titre = f"C300e Break {finition} {annee or '?'} · {km:,} km".replace(",", " ") if km else f"C300e Break {finition} {annee or '?'}"
+            finition = ""
+            titre = f"{modele_nom} {finition} {annee or '?'} · {km:,} km".replace(",", " ") if km else f"{modele_nom} {finition} {annee or '?'}"
 
             annonces.append({
                 "source"              : SOURCE_NOM,
@@ -158,10 +163,13 @@ def _est_eligible(annonce: dict, criteres: dict) -> bool:
 
 
 
-def _fetch_annee_detail(holder_id, headers):
+def _fetch_annee_detail(holder_id, headers, detail_url_pattern: str = None):
     """Récupère l année réelle sur la page détail de l annonce."""
     import time
-    url = f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e-{holder_id}.html"
+    if detail_url_pattern:
+        url = detail_url_pattern.format(holder_id=holder_id)
+    else:
+        url = f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e-{holder_id}.html"
     try:
         req = urllib.request.Request(url, headers=headers)
         resp = urllib.request.urlopen(req, timeout=10)
@@ -174,18 +182,26 @@ def _fetch_annee_detail(holder_id, headers):
     except Exception:
         return None
 
+# Patterns URL détail par modèle
+DETAIL_URL_PATTERNS = {
+    "mercedes_c300e" : BASE_URL + "/voiture-occasion/mercedes-classe-c-break-c-300-e-{holder_id}.html",
+    "bmw_330e"       : BASE_URL + "/voiture-occasion/bmw-serie-3-break-330e-{holder_id}.html",
+}
+
 def scraper(modele: dict = None) -> list:
     """
-    Scrape Le Parking pour les C300e Break.
-    
+    Scrape Le Parking — supporte Mercedes C300e et BMW 330e.
     ⚠️  Ce scraper DOIT tourner depuis une IP résidentielle (NAS).
-        Il retourne 403 depuis GitHub Actions (IP datacenter).
     """
-    criteres = modele.get("criteres", {}) if modele else {}
+    criteres   = modele.get("criteres", {}) if modele else {}
+    modele_id  = modele.get("id", "mercedes_c300e") if modele else "mercedes_c300e"
+    modele_nom = modele.get("nom", "Break") if modele else "Break"
+    search_url = SEARCH_URLS.get(modele_id, SEARCH_URL)
+    detail_pat = DETAIL_URL_PATTERNS.get(modele_id)
     annonces = []
 
     try:
-        req = urllib.request.Request(SEARCH_URL, headers=HEADERS)
+        req = urllib.request.Request(search_url, headers=HEADERS)
         try:
             resp = urllib.request.urlopen(req, timeout=30)
             raw = resp.read()
@@ -202,17 +218,17 @@ def scraper(modele: dict = None) -> list:
             raise
 
         if HAS_BS4:
-            raw = _extraire_annonces(html, criteres)
+            raw = _extraire_annonces(html, criteres, modele_nom)
         else:
             print(f"  ℹ️  Le Parking — BeautifulSoup absent, parsing regex")
-            raw = _extraire_annonces_regex(html, criteres)
+            raw = _extraire_annonces(html, criteres, modele_nom)
 
         # Enrichir avec l'année réelle depuis la page détail
         enrichies = []
         for a in raw:
             hid = a.get("holder_id", "")
             if hid:
-                annee_reelle = _fetch_annee_detail(hid, HEADERS)
+                annee_reelle = _fetch_annee_detail(hid, HEADERS, detail_pat)
                 if annee_reelle:
                     a["annee"] = annee_reelle
                     # Rejeter si hors critère annee
