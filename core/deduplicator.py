@@ -108,6 +108,10 @@ def traiter_annonces(annonces: list, modele_id: str) -> dict:
     # Filtrer les annonces archivées de la liste entrante
     annonces = [a for a in annonces if _id_annonce(a) not in archived_ids]
 
+    # Calculer l'id si absent (annonces injectées manuellement)
+    for a in vues:
+        if isinstance(a, dict) and not a.get("id"):
+            a["id"] = _id_annonce(a)
     vues_index          = {a["id"]: a for a in vues if isinstance(a, dict) and "id" in a
                            and a.get("id") not in archived_ids}
     nouvelles           = []
