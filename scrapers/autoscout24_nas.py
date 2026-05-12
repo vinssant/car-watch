@@ -21,7 +21,7 @@ FIABILITE  = 6
 # URLs par modèle — clé = modele["id"]
 SEARCH_URLS = {
     "mercedes_c300e" : "https://www.autoscout24.fr/lst/mercedes-benz/c-300",
-    "bmw_330e"       : "https://www.autoscout24.fr/lst/bmw/330e",
+    "bmw_330e"       : "https://www.autoscout24.fr/lst/bmw/s%C3%A9rie-3-%28tous%29",
 }
 SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
@@ -163,8 +163,13 @@ def scraper(modele: dict = None) -> list:
     km_max     = criteres.get("km_max", 65000)
 
     base_url = SEARCH_URLS.get(modele_id, SEARCH_URL)
-    url = (f"{base_url}?fregfrom={annee_min}&priceto={budget_max}"
-           f"&kmto={km_max}&ustate=U&cy=F&sort=price&desc=0")
+    if modele_id == "bmw_330e":
+        url = (f"{base_url}?body=5&fuel=2&version0=330&atype=C"
+               f"&fregfrom={annee_min}&priceto={budget_max}&kmto={km_max}"
+               f"&ustate=N,U&cy=F&sort=price&desc=0&damaged_listing=exclude")
+    else:
+        url = (f"{base_url}?fregfrom={annee_min}&priceto={budget_max}"
+               f"&kmto={km_max}&ustate=U&cy=F&sort=price&desc=0")
 
     annonces = []
     try:

@@ -19,15 +19,24 @@ from core.reporter     import generer_email_modele, generer_sujet_email
 from core.mailer       import envoyer_email
 from config            import EMAIL_DESTINATAIRE
 
-SCRAPERS_NAS = {
-    "leparking"            : leparking.scraper,
-    "autoscout24_nas"      : autoscout24_nas_scraper,
-    "gmail_parser"         : gmail_parser_scraper,
-    "mercedes_certified"   : mercedes_certified_scraper,
-    "spoticar"             : spoticar_scraper,
+# Scrapers communs à tous les modèles
+SCRAPERS_COMMUNS = {
+    "leparking"       : leparking.scraper,
+    "autoscout24_nas" : autoscout24_nas_scraper,
+    "gmail_parser"    : gmail_parser_scraper,
 }
 
-# Sources NAS à activer dans chaque modèle
+# Scrapers spécifiques à certains modèles uniquement
+SCRAPERS_PAR_MODELE = {
+    "mercedes_c300e": {
+        "mercedes_certified": mercedes_certified_scraper,
+        "spoticar"          : spoticar_scraper,
+    },
+    "bmw_330e": {
+        # BMW Certified à ajouter quand disponible
+    },
+}
+
 SOURCES_NAS_IDS = {"leparking", "autoscout24_nas", "autoscout24", "mercedes_certified", "spoticar", "lacentrale", "leboncoin"}
 
 
@@ -46,8 +55,9 @@ def main():
         print(f"\n{modele['emoji']} {modele['nom']}")
         annonces_brutes = []
 
-        # Lancer tous les scrapers NAS disponibles
-        for source_id, scraper_fn in SCRAPERS_NAS.items():
+        # Scrapers communs + scrapers spécifiques au modèle
+        scrapers_actifs = {**SCRAPERS_COMMUNS, **SCRAPERS_PAR_MODELE.get(modele["id"], {})}
+        for source_id, scraper_fn in scrapers_actifs.items():
             nom = source_id.replace("_", " ").title()
             print(f"  🔍 {nom}...")
             try:
