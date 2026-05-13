@@ -360,23 +360,39 @@ def _parser_generique(texte: str, source_nom: str, modele_nom: str = "Break") ->
 def _parser_autoscout24(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
     """
     Parse un email d'alerte Autoscout24.
-    Les URLs sont entre chevrons <https://...> dans le texte brut.
-    Les données (prix, km, année) sont sur les lignes suivant l'URL.
+    Stratégie : découper le texte en segments entre chaque URL d'annonce.
+    Chaque segment contient les données (prix, km, année) propres à cette annonce.
     """
     annonces = []
-    # AS24 envoie les URLs entre chevrons : <https://www.autoscout24.fr/offres/...>
     url_matches = list(re.finditer(
         r'<?(https?://www\.autoscout24\.fr/offres/[^\s<>"&]+)>?', texte
     ))
     if not url_matches:
         return annonces
 
+    # Ignorer les URLs dupliquées (AS24 répète l'URL après "Détails")
+    urls_vues = set()
+    url_uniques = []
+    for um in url_matches:
+        url = um.group(1).strip()
+        if url not in urls_vues:
+            urls_vues.add(url)
+            url_uniques.append(um)
+    url_matches = url_uniques
+
     for i, um in enumerate(url_matches):
         url = um.group(1).strip()
-        # Contexte : 150 chars avant + 500 chars après cette URL
-        start = max(0, um.start() - 150)
-        end   = min(len(texte), um.end() + 500)
-        bloc  = texte[start:end]
+        # Bloc = texte entre cette URL et la suivante (ou fin)
+        # On prend 50 chars avant l'URL (titre) + jusqu'à la prochaine URL
+        # Bloc = texte APRÈS cette URL jusqu'à la prochaine
+        debut_bloc = um.end()
+        if i + 1 < len(url_matches):
+            fin_bloc = url_matches[i + 1].start()
+        else:
+            fin_bloc = min(len(texte), um.end() + 600)
+        bloc = texte[debut_bloc:fin_bloc]
+        # Titre : lignes juste avant l'URL (nom du véhicule)
+        avant_url = texte[max(0, um.start()-300):um.start()]
 
         try:
             # Prix : "€ 39 490" ou "39 490 €"
@@ -426,11 +442,14 @@ def _parser_autoscout24(texte: str, source_nom: str, modele_nom: str = "Break") 
                     try: annee = int(an_m.group(1))
                     except: pass
 
-            # Titre : lignes avant l'URL dans le bloc
-            avant = texte[max(0, um.start()-300):um.start()]
-            lignes = [l.strip() for l in avant.split('\n') if l.strip() and len(l.strip()) > 5]
+            lignes = [l.strip() for l in avant_url.split('\n')
+                      if l.strip() and len(l.strip()) > 3
+                      and not l.strip().startswith('<')
+                      and not l.strip().startswith('http')
+                      and '€' not in l and 'km' not in l.lower()
+                      and 'recherche' not in l.lower()]
             titre = lignes[-1] if lignes else f"{modele_nom} via alerte AS24"
-            if len(titre) > 100 or titre.startswith('http') or titre.startswith('<'):
+            if len(titre) > 100:
                 titre = f"{modele_nom} {annee or '?'} via alerte AS24"
 
             toit = "panoram" in url.lower() or "toit" in titre.lower()
