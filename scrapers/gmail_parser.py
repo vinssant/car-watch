@@ -358,33 +358,96 @@ def _parser_generique(texte: str, source_nom: str, modele_nom: str = "Break") ->
 
 
 def _parser_autoscout24(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
-    """Parse un email d'alerte Autoscout24."""
+    """
+    Parse un email d'alerte Autoscout24.
+    Extrait les données par bloc autour de chaque URL d'annonce.
+    """
     annonces = []
-    # AS24 envoie des liens du type /offres/mercedes-benz-c-300-...
-    urls = re.findall(r'https?://www\.autoscout24\.fr/offres/[^\s<>"&]+', texte)
-    for url in urls[:10]:
+    # Trouver toutes les URLs d'annonces avec leur position
+    url_matches = list(re.finditer(
+        r'https?://www\.autoscout24\.fr/offres/[^\s<>"&]+', texte
+    ))
+    if not url_matches:
+        return annonces
+
+    # Découper le texte en blocs : chaque bloc va d'une URL à la suivante
+    for i, um in enumerate(url_matches):
+        url = um.group(0)
+        # Contexte : 300 chars avant + 400 chars après cette URL
+        start = max(0, um.start() - 300)
+        end   = um.end() + 400
+        bloc  = texte[start:end]
+
         try:
-            prix_m  = re.search(r'(\d[\d\s]+)\s*€', texte)
-            km_m    = re.search(r'(\d[\d\s]+)\s*km', texte, re.IGNORECASE)
-            annee_m = re.search(r'(202[0-9])', texte)
-            toit    = "panoram" in url.lower() or "toit" in texte.lower()
-            prix    = int(re.sub(r'\s', '', prix_m.group(1))) if prix_m else None
-            km      = int(re.sub(r'\s', '', km_m.group(1))) if km_m else None
-            annee   = int(annee_m.group(1)) if annee_m else None
+            # Prix dans ce bloc : chercher € ou format numérique
+            prix = None
+            for pm in re.finditer(r'€\s*([\d][\d\s]+)', bloc):
+                try:
+                    v = int(re.sub(r'\s', '', pm.group(1)))
+                    if 500 < v < 150000:
+                        prix = v
+                        break
+                except ValueError:
+                    pass
+            if not prix:
+                for pm in re.finditer(r'([\d][\d\s]+)\s*€', bloc):
+                    try:
+                        v = int(re.sub(r'\s', '', pm.group(1)))
+                        if 500 < v < 150000:
+                            prix = v
+                            break
+                    except ValueError:
+                        pass
             if not prix:
                 continue
+
+            # Km dans ce bloc
+            km = None
+            km_m = re.search(r'([\d][\d\s]+)\s*km', bloc, re.IGNORECASE)
+            if km_m:
+                try:
+                    km = int(re.sub(r'\s', '', km_m.group(1)))
+                except ValueError:
+                    pass
+
+            # Année dans ce bloc
+            annee = None
+            for am in re.finditer(r'\b(20[012]\d|199\d)\b', bloc):
+                try:
+                    y = int(am.group(1))
+                    if 2010 <= y <= 2026:
+                        annee = y
+                        break
+                except ValueError:
+                    pass
+
+            # Titre : ligne avant l'URL
+            avant_url = texte[max(0, um.start()-200):um.start()]
+            lignes = [l.strip() for l in avant_url.split('\n') if l.strip()]
+            titre = lignes[-1] if lignes else modele_nom
+            if len(titre) < 5 or len(titre) > 100:
+                titre = f"{modele_nom} {annee or '?'} via alerte AS24"
+
+            toit = "panoram" in url.lower() or "toit" in titre.lower()
+
             annonces.append({
-                "source": "Autoscout24 (alerte)", "source_id": SOURCE_ID,
-                "fiabilite_source": FIABILITE,
-                "titre": f"{modele_nom} {annee or '?'} via alerte AS24",
-                "vendeur": "Via alerte Autoscout24", "url": url,
-                "prix": prix, "annee": annee, "km": km,
-                "toit_ouvrant": True if toit else None,
-                "garantie_mois": None, "premiere_main": None,
-                "entretien_constructeur": None,
+                "source"                 : "Autoscout24 (alerte)",
+                "source_id"              : SOURCE_ID,
+                "fiabilite_source"       : FIABILITE,
+                "titre"                  : titre[:80],
+                "vendeur"                : "Via alerte Autoscout24",
+                "url"                    : url,
+                "prix"                   : prix,
+                "annee"                  : annee,
+                "km"                     : km,
+                "toit_ouvrant"           : True if toit else None,
+                "garantie_mois"          : None,
+                "premiere_main"          : None,
+                "entretien_constructeur" : None,
             })
         except Exception:
             continue
+
     return annonces
 
 
