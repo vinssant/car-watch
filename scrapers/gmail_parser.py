@@ -54,8 +54,14 @@ SENDERS_ALERTES = {
 }
 
 
+# Cache singleton — évite de réinitialiser le service à chaque appel
+_GMAIL_SERVICE_CACHE = None
+
 def _get_gmail_service():
-    """Obtient le service Gmail."""
+    """Obtient le service Gmail (singleton — réutilisé entre les modèles)."""
+    global _GMAIL_SERVICE_CACHE
+    if _GMAIL_SERVICE_CACHE is not None:
+        return _GMAIL_SERVICE_CACHE
     import os
     token_env = os.environ.get("GMAIL_TOKEN")
     if token_env:
@@ -69,7 +75,8 @@ def _get_gmail_service():
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
 
-    return build("gmail", "v1", credentials=creds)
+    _GMAIL_SERVICE_CACHE = build("gmail", "v1", credentials=creds)
+    return _GMAIL_SERVICE_CACHE
 
 
 def _decoder_body(message: dict) -> str:
