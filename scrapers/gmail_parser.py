@@ -360,37 +360,34 @@ def _parser_generique(texte: str, source_nom: str, modele_nom: str = "Break") ->
 def _parser_autoscout24(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
     """
     Parse un email d'alerte Autoscout24.
-    Extrait les données par bloc autour de chaque URL d'annonce.
+    Les URLs sont entre chevrons <https://...> dans le texte brut.
+    Les données (prix, km, année) sont sur les lignes suivant l'URL.
     """
     annonces = []
-    # Trouver toutes les URLs d'annonces avec leur position
+    # AS24 envoie les URLs entre chevrons : <https://www.autoscout24.fr/offres/...>
     url_matches = list(re.finditer(
-        r'https?://www\.autoscout24\.fr/offres/[^\s<>"&]+', texte
+        r'<?(https?://www\.autoscout24\.fr/offres/[^\s<>"&]+)>?', texte
     ))
     if not url_matches:
         return annonces
 
-    # Découper le texte en blocs : chaque bloc va d'une URL à la suivante
     for i, um in enumerate(url_matches):
-        url = um.group(0)
-        # Contexte : 300 chars avant + 400 chars après cette URL
-        start = max(0, um.start() - 300)
-        end   = um.end() + 400
+        url = um.group(1).strip()
+        # Contexte : 150 chars avant + 500 chars après cette URL
+        start = max(0, um.start() - 150)
+        end   = min(len(texte), um.end() + 500)
         bloc  = texte[start:end]
 
         try:
-            # Prix dans ce bloc : chercher € ou format numérique
+            # Prix : "€ 39 490" ou "39 490 €"
             prix = None
-            for pm in re.finditer(r'€\s*([\d][\d\s]+)', bloc):
-                try:
-                    v = int(re.sub(r'\s', '', pm.group(1)))
-                    if 500 < v < 150000:
-                        prix = v
-                        break
-                except ValueError:
-                    pass
-            if not prix:
-                for pm in re.finditer(r'([\d][\d\s]+)\s*€', bloc):
+            # Prix : chercher sur une seule ligne pour éviter fusion avec km
+            for ligne in bloc.split('\n'):
+                if '€' not in ligne:
+                    continue
+                # "€ 39 490" ou "39 490 €"
+                pm = re.search(r'€\s*([\d][\d ]+)', ligne) or re.search(r'([\d][\d ]+)\s*€', ligne)
+                if pm:
                     try:
                         v = int(re.sub(r'\s', '', pm.group(1)))
                         if 500 < v < 150000:
@@ -401,31 +398,39 @@ def _parser_autoscout24(texte: str, source_nom: str, modele_nom: str = "Break") 
             if not prix:
                 continue
 
-            # Km dans ce bloc
-            km = None
-            km_m = re.search(r'([\d][\d\s]+)\s*km', bloc, re.IGNORECASE)
-            if km_m:
-                try:
-                    km = int(re.sub(r'\s', '', km_m.group(1)))
-                except ValueError:
-                    pass
-
-            # Année dans ce bloc
-            annee = None
-            for am in re.finditer(r'\b(20[012]\d|199\d)\b', bloc):
-                try:
-                    y = int(am.group(1))
-                    if 2010 <= y <= 2026:
-                        annee = y
+            # Km + Année : "33 300 km, 11/2023"
+            km, annee = None, None
+            # Chercher km sur une ligne dédiée : "33 300 km, 11/2023"
+            for ligne in bloc.split('\n'):
+                ligne = ligne.strip()
+                if 'km' not in ligne.lower():
+                    continue
+                ka = re.search(r'([\d][\d ]+)\s*km[,\s]+(?:\d{2}/)?(20\d{2}|199\d)', ligne, re.IGNORECASE)
+                if ka:
+                    try:
+                        km    = int(re.sub(r'\s', '', ka.group(1)))
+                        annee = int(ka.group(2))
                         break
-                except ValueError:
-                    pass
+                    except ValueError:
+                        pass
+                km_only = re.search(r'([\d][\d ]+)\s*km', ligne, re.IGNORECASE)
+                if km_only:
+                    try:
+                        km = int(re.sub(r'\s', '', km_only.group(1)))
+                        break
+                    except ValueError:
+                        pass
+            if not annee:
+                an_m = re.search(r'\b(20\d{2})\b', bloc)
+                if an_m:
+                    try: annee = int(an_m.group(1))
+                    except: pass
 
-            # Titre : ligne avant l'URL
-            avant_url = texte[max(0, um.start()-200):um.start()]
-            lignes = [l.strip() for l in avant_url.split('\n') if l.strip()]
-            titre = lignes[-1] if lignes else modele_nom
-            if len(titre) < 5 or len(titre) > 100:
+            # Titre : lignes avant l'URL dans le bloc
+            avant = texte[max(0, um.start()-300):um.start()]
+            lignes = [l.strip() for l in avant.split('\n') if l.strip() and len(l.strip()) > 5]
+            titre = lignes[-1] if lignes else f"{modele_nom} via alerte AS24"
+            if len(titre) > 100 or titre.startswith('http') or titre.startswith('<'):
                 titre = f"{modele_nom} {annee or '?'} via alerte AS24"
 
             toit = "panoram" in url.lower() or "toit" in titre.lower()
@@ -452,27 +457,65 @@ def _parser_autoscout24(texte: str, source_nom: str, modele_nom: str = "Break") 
 
 
 def _parser_lacentrale(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
-    """Parse un email d'alerte La Centrale."""
+    """Parse un email d'alerte La Centrale — extraction par bloc autour de chaque URL."""
     annonces = []
-    urls = re.findall(r'https?://www\.lacentrale\.fr/auto-occasion-annonce-[^\s<>"&]+', texte)
-    for url in urls[:10]:
+    url_matches = list(re.finditer(
+        r'https?://www\.lacentrale\.fr/auto-occasion-annonce-[^\s<>"&]+', texte
+    ))
+    for um in url_matches:
+        url = um.group(0).strip()
+        start = max(0, um.start() - 200)
+        end   = min(len(texte), um.end() + 400)
+        bloc  = texte[start:end]
         try:
-            prix_m  = re.search(r'(\d[\d\s]+)\s*€', texte)
-            km_m    = re.search(r'(\d[\d\s]+)\s*km', texte, re.IGNORECASE)
-            annee_m = re.search(r'(202[0-9])', texte)
-            prix    = int(re.sub(r'\s', '', prix_m.group(1))) if prix_m else None
-            km      = int(re.sub(r'\s', '', km_m.group(1))) if km_m else None
-            annee   = int(annee_m.group(1)) if annee_m else None
+            prix = None
+            for ligne in bloc.split('\n'):
+                if '€' not in ligne:
+                    continue
+                pm = re.search(r'([\d][\d ]+)\s*€', ligne) or re.search(r'€\s*([\d][\d ]+)', ligne)
+                if pm:
+                    try:
+                        v = int(re.sub(r'\s', '', pm.group(1)))
+                        if 500 < v < 150000:
+                            prix = v
+                            break
+                    except ValueError:
+                        pass
             if not prix:
                 continue
+
+            km, annee = None, None
+            km_annee = re.search(r'([\d][\d\s]+)\s*km[,\s]+(?:\d{2}/)?(20\d{2}|199\d)', bloc, re.IGNORECASE)
+            if km_annee:
+                try:
+                    km    = int(re.sub(r'\s', '', km_annee.group(1)))
+                    annee = int(km_annee.group(2))
+                except ValueError:
+                    pass
+            else:
+                km_m = re.search(r'([\d][\d\s]+)\s*km', bloc, re.IGNORECASE)
+                if km_m:
+                    try: km = int(re.sub(r'\s', '', km_m.group(1)))
+                    except ValueError: pass
+                an_m = re.search(r'\b(20\d{2})\b', bloc)
+                if an_m:
+                    try: annee = int(an_m.group(1))
+                    except ValueError: pass
+
             annonces.append({
-                "source": "La Centrale (alerte)", "source_id": SOURCE_ID,
-                "fiabilite_source": FIABILITE,
-                "titre": f"{modele_nom} {annee or '?'} via alerte La Centrale",
-                "vendeur": "Via alerte La Centrale", "url": url,
-                "prix": prix, "annee": annee, "km": km,
-                "toit_ouvrant": None, "garantie_mois": None,
-                "premiere_main": None, "entretien_constructeur": None,
+                "source"                 : "La Centrale (alerte)",
+                "source_id"              : SOURCE_ID,
+                "fiabilite_source"       : FIABILITE,
+                "titre"                  : f"{modele_nom} {annee or '?'} via alerte La Centrale",
+                "vendeur"                : "Via alerte La Centrale",
+                "url"                    : url,
+                "prix"                   : prix,
+                "annee"                  : annee,
+                "km"                     : km,
+                "toit_ouvrant"           : None,
+                "garantie_mois"          : None,
+                "premiere_main"          : None,
+                "entretien_constructeur" : None,
             })
         except Exception:
             continue
