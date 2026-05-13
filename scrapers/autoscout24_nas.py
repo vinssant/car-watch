@@ -22,6 +22,7 @@ FIABILITE  = 6
 SEARCH_URLS = {
     "mercedes_c300e" : "https://www.autoscout24.fr/lst/mercedes-benz/c-300",
     "bmw_3series"    : "https://www.autoscout24.fr/lst/bmw/s%C3%A9rie-3-%28tous%29",
+    "audi_a3"        : "https://www.autoscout24.fr/lst/audi/a3",
 }
 SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
@@ -31,7 +32,7 @@ HEADERS = {
     "Accept"         : "text/html,application/xhtml+xml",
 }
 
-BREAKS_TYPES = ["wagon", "t-modell", "estate", "combi", "break", "sw", "touring"]
+BREAKS_TYPES = ["wagon", "t-modell", "estate", "combi", "break", "sw", "touring", "sportback", "hatchback"]
 
 
 def _fetch_html(url: str) -> str:
@@ -70,10 +71,13 @@ def _normaliser(item: dict, modele_info: dict = None):
     if not is_break:
         return None
 
-    # Filtrer uniquement hybrides/PHEV
+    # Filtrer motorisation selon le modèle
     fuel = (v.get("fuel") or "").lower()
-    if "lectrique" not in fuel and "hybride" not in fuel and "phev" not in fuel:
-        return None
+    modele_id_local = (modele_info or {}).get("id", "mercedes_c300e")
+    if modele_id_local not in ("audi_a3",):
+        # Pour Mercedes et BMW : hybrides uniquement
+        if "lectrique" not in fuel and "hybride" not in fuel and "phev" not in fuel:
+            return None
 
     # Prix
     prix_fmt = p.get("priceFormatted", "")
@@ -158,15 +162,17 @@ def scraper(modele: dict = None) -> list:
     """
     criteres   = modele.get("criteres", {}) if modele else {}
     modele_id  = modele.get("id", "mercedes_c300e") if modele else "mercedes_c300e"
-    modele_id  = "bmw_3series" if modele_id == "bmw_330e" else modele_id  # rétrocompat
     annee_min  = criteres.get("annee_min", 2023)
     budget_max = criteres.get("budget_max", 42000)
     km_max     = criteres.get("km_max", 65000)
 
     base_url = SEARCH_URLS.get(modele_id, SEARCH_URL)
     if modele_id == "bmw_3series":
-        # body=5=Touring, fuel=2=PHEV, sans version0 pour avoir 320e+330e
         url = (f"{base_url}?body=5&fuel=2&atype=C"
+               f"&fregfrom={annee_min}&priceto={budget_max}&kmto={km_max}"
+               f"&ustate=N,U&cy=F&sort=price&desc=0&damaged_listing=exclude")
+    elif modele_id == "audi_a3":
+        url = (f"{base_url}?body=6&atype=C"
                f"&fregfrom={annee_min}&priceto={budget_max}&kmto={km_max}"
                f"&ustate=N,U&cy=F&sort=price&desc=0&damaged_listing=exclude")
     else:
