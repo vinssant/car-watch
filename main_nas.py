@@ -95,6 +95,28 @@ def main():
 
     print(f"\n✅ NAS terminé — {datetime.now().strftime('%H:%M:%S')}")
 
+    # Push automatique vers GitHub
+    import subprocess
+    try:
+        subprocess.run(["git", "add",
+            "data/mercedes_c300e_nas/seen_ads.json",
+            "data/mercedes_c300e_nas/ads_history.json",
+            "data/bmw_3series_nas/seen_ads.json",
+            "data/bmw_3series_nas/ads_history.json",
+        ], check=True, capture_output=True)
+        result = subprocess.run(["git", "diff", "--cached", "--quiet"], capture_output=True)
+        if result.returncode != 0:  # il y a des changements
+            subprocess.run(["git", "commit", "-m",
+                f"data: run automatique {datetime.now().strftime('%d/%m/%Y %H:%M')}"],
+                check=True, capture_output=True)
+            subprocess.run(["git", "push", "origin", "main"],
+                check=True, capture_output=True)
+            print("✅ Dashboard mis à jour sur GitHub")
+        else:
+            print("ℹ️  Aucun changement à pousser")
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️  Push GitHub échoué : {e.stderr.decode() if e.stderr else e}")
+
 
 if __name__ == "__main__":
     main()
