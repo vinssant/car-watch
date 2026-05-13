@@ -16,7 +16,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 
-SCOPES      = ["https://www.googleapis.com/auth/gmail.send"]
+SCOPES      = ["https://www.googleapis.com/auth/gmail.send", "https://www.googleapis.com/auth/gmail.readonly"]
 TOKEN_FILE  = Path(__file__).parent.parent / "token.json"
 
 
