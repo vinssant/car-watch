@@ -1,0 +1,13 @@
+{
+  "gmail_token": {
+    "ok": true,
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.send",
+      "https://www.googleapis.com/auth/gmail.readonly"
+    ],
+    "checked_at": "2026-05-13T17:23:11.411806",
+    "has_send": true,
+    "has_readonly": true
+  },
+  "last_run": "2026-05-13T17:23:11.420639"
+}
