@@ -23,7 +23,8 @@ BASE_URL   = "https://www.leparking.fr"
 # URLs par modèle
 SEARCH_URLS = {
     "mercedes_c300e" : f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e.html",
-    "bmw_330e"       : f"{BASE_URL}/voiture-occasion/bmw-serie-3-break-330e.html",
+    "bmw_3series"    : f"{BASE_URL}/voiture-occasion/bmw-serie-3-break-330e.html",
+    "audi_a3"        : f"{BASE_URL}/voiture-occasion/audi-a3-sportback.html",
 }
 SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
@@ -78,7 +79,8 @@ def _extraire_annonces(html: str, criteres: dict, modele_nom: str = "Break") -> 
                 continue
             prix_txt = re.sub(r"[^\d]", "", prix_el.get_text())
             prix = int(prix_txt) if prix_txt else None
-            if not prix or prix < 10000 or prix > budget_max:
+            prix_min = max(500, budget_max // 20)  # min dynamique selon budget
+            if not prix or prix < prix_min or prix > budget_max:
                 continue
 
             # Kilométrage
@@ -98,13 +100,14 @@ def _extraire_annonces(html: str, criteres: dict, modele_nom: str = "Break") -> 
             if not annee:
                 # Fallback : toutes les années dans le texte sauf 2025/2026 (dates publication)
                 toutes = [int(a) for a in re.findall(r"\b(20[12][0-9])\b", texte)]
-                valides = [a for a in toutes if 2019 <= a <= 2025]
+                annee_min_fallback = max(2014, annee_min - 1)
+                valides = [a for a in toutes if annee_min_fallback <= a <= 2026]
                 annee = max(valides) if valides else None
             if annee and annee < annee_min:
                 continue
 
-            # URL détail
-            url = f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e-{holder_id}.html"
+            # URL détail — sera remplacée par l'URL réelle après fetch détail
+            url = f"{BASE_URL}/voiture-occasion/placeholder-{holder_id}.html"
 
             # Toit ouvrant
             texte_lower = texte.lower()
@@ -185,7 +188,8 @@ def _fetch_annee_detail(holder_id, headers, detail_url_pattern: str = None):
 # Patterns URL détail par modèle
 DETAIL_URL_PATTERNS = {
     "mercedes_c300e" : BASE_URL + "/voiture-occasion/mercedes-classe-c-break-c-300-e-{holder_id}.html",
-    "bmw_330e"       : BASE_URL + "/voiture-occasion/bmw-serie-3-break-330e-{holder_id}.html",
+    "bmw_3series"    : BASE_URL + "/voiture-occasion/bmw-serie-3-break-330e-{holder_id}.html",
+    "audi_a3"        : BASE_URL + "/voiture-occasion/audi-a3-sportback-{holder_id}.html",
 }
 
 def scraper(modele: dict = None) -> list:
@@ -223,17 +227,19 @@ def scraper(modele: dict = None) -> list:
             print(f"  ℹ️  Le Parking — BeautifulSoup absent, parsing regex")
             raw = _extraire_annonces(html, criteres, modele_nom)
 
-        # Enrichir avec l'année réelle depuis la page détail
+        # Enrichir avec l'année réelle depuis la page détail + corriger l'URL
         enrichies = []
         for a in raw:
             hid = a.get("holder_id", "")
             if hid:
+                # Corriger l'URL avec le bon pattern
+                if detail_pat:
+                    a["url"] = detail_pat.format(holder_id=hid)
                 annee_reelle = _fetch_annee_detail(hid, HEADERS, detail_pat)
                 if annee_reelle:
                     a["annee"] = annee_reelle
-                    # Rejeter si hors critère annee
-                    annee_min = criteres.get("annee_min", 2023)
-                    if annee_reelle < annee_min:
+                    annee_min_c = criteres.get("annee_min", 2023)
+                    if annee_reelle < annee_min_c:
                         continue
             enrichies.append(a)
         raw = enrichies
