@@ -231,6 +231,94 @@ def _parser_leparking(texte: str, source_nom: str, modele_nom: str = "Break") ->
     return annonces
 
 
+def _parser_aramisauto(texte: str, modele_nom: str = "Break") -> list:
+    """
+    Parse un email Aramisauto.
+    Structure réelle : données en clair + URL tracking avant "Voir l'annonce"
+    """
+    annonces = []
+    # Chercher le bloc annonce : URL suivie de "Voir l'annonce"
+    # L URL a une espace trailing avant \r\n
+    voir_pattern = re.compile(
+        r'(https://click\.tech\.aramisauto\.com/\?qs=[^\r\n]+?)\s*\r?\n\s*Voir',
+        re.IGNORECASE
+    )
+    voir_urls = [m.group(1).strip() for m in voir_pattern.finditer(texte)]
+
+    if not voir_urls:
+        return annonces
+
+    # Chercher année + km : "2024 - 33361 km" ou "2024 - 33 361 km"
+    annee_km_matches = list(re.finditer(
+        r'(20\d{2})\s*[-–]\s*([\d\s]+)\s*km', texte, re.IGNORECASE
+    ))
+
+    # Prix : "41 799 &#x20AC;" ou "41 799 €"
+    prix_matches = list(re.finditer(
+        r'([\d][\d\s]+)\s*(?:&#x20AC;|€|&#xE2;)', texte
+    ))
+
+    # Titres véhicule
+    titre_matches = list(re.finditer(
+        r'((?:Mercedes|BMW|Audi|Volkswagen|Peugeot|Renault|Citroën|Ford|Toyota)[^\n]{5,80})',
+        texte
+    ))
+
+    for i, url in enumerate(voir_urls):
+        try:
+            # Trouver année+km le plus proche avant cette URL
+            url_pos = texte.find(url)
+            annee, km = None, None
+            for ak in reversed(annee_km_matches):
+                if ak.start() < url_pos:
+                    annee = int(ak.group(1))
+                    km    = int(re.sub(r'\s', '', ak.group(2)))
+                    break
+
+            # Prix le plus proche avant l URL
+            prix = None
+            for pm in reversed(prix_matches):
+                if pm.start() < url_pos:
+                    try:
+                        prix = int(re.sub(r'\s', '', pm.group(1)))
+                        if 500 < prix < 200000:
+                            break
+                    except ValueError:
+                        pass
+
+            if not prix:
+                continue
+
+            # Titre le plus proche avant l URL
+            titre = modele_nom
+            for tm in reversed(titre_matches):
+                if tm.start() < url_pos:
+                    titre = tm.group(1).strip()
+                    break
+
+            toit = True if any(w in titre.lower() for w in ['toit', 'panoram', 'sunroof']) else None
+
+            annonces.append({
+                "source"                 : "Aramisauto (alerte)",
+                "source_id"              : SOURCE_ID,
+                "fiabilite_source"       : 7,
+                "titre"                  : titre[:80],
+                "vendeur"                : "Aramisauto",
+                "url"                    : url,
+                "prix"                   : prix,
+                "annee"                  : annee,
+                "km"                     : km,
+                "toit_ouvrant"           : toit,
+                "garantie_mois"          : 12,
+                "premiere_main"          : None,
+                "entretien_constructeur" : None,
+            })
+        except Exception:
+            continue
+
+    return annonces
+
+
 def _parser_generique(texte: str, source_nom: str, modele_nom: str = "Break") -> list:
     """Parser générique pour autres sources d'alertes."""
     annonces = []
@@ -393,6 +481,8 @@ def scraper(modele: dict = None) -> list:
                     nouvelles = _parser_lacentrale(texte, source_nom, modele_nom)
                 elif "leparking" in from_addr:
                     nouvelles = _parser_leparking(texte, source_nom, modele_nom)
+                elif "aramisauto" in from_addr:
+                    nouvelles = _parser_aramisauto(texte, modele_nom)
                 elif "spoticar" in from_addr or "stellantis" in from_addr:
                     nouvelles = _parser_spoticar(texte, source_nom)
                 else:
