@@ -28,9 +28,9 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant : à confirmer · ⚠️ Kilométrage élevé (155 000 km) · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-13T17:00:26.766670",
+    "score_date": "2026-05-13T17:04:20.064676",
     "id": "4635a2f7c9c9",
-    "derniere_vue": "2026-05-13T17:00:26.767246",
+    "derniere_vue": "2026-05-13T17:04:20.065611",
     "premiere_vue": "2026-05-13T10:44:47.782600",
     "first_seen_at": "2026-05-13T10:44:47.782600",
     "est_nouvelle": false
@@ -64,12 +64,12 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant : à confirmer · ⚠️ Kilométrage élevé (137 000 km) · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-13T16:53:31.306772",
+    "score_date": "2026-05-13T17:04:20.064773",
     "id": "e660ea75d304",
-    "derniere_vue": "2026-05-13T16:53:31.307438",
+    "derniere_vue": "2026-05-13T17:04:20.065611",
     "premiere_vue": "2026-05-13T16:53:31.307438",
     "first_seen_at": "2026-05-13T16:53:31.307438",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "source": "Autoscout24 (alerte)",
@@ -100,12 +100,12 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant : à confirmer · ⚠️ Kilométrage élevé (137 000 km) · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-13T16:53:31.306844",
+    "score_date": "2026-05-13T17:04:20.064846",
     "id": "4672b7a4e142",
-    "derniere_vue": "2026-05-13T16:53:31.307438",
+    "derniere_vue": "2026-05-13T17:04:20.065611",
     "premiere_vue": "2026-05-13T16:53:31.307438",
     "first_seen_at": "2026-05-13T16:53:31.307438",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "source": "Autoscout24 (alerte)",
@@ -136,12 +136,12 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant : à confirmer · ⚠️ Kilométrage élevé (137 000 km) · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-13T16:53:31.306915",
+    "score_date": "2026-05-13T17:04:20.064917",
     "id": "eb807e623e65",
-    "derniere_vue": "2026-05-13T16:53:31.307438",
+    "derniere_vue": "2026-05-13T17:04:20.065611",
     "premiere_vue": "2026-05-13T16:53:31.307438",
     "first_seen_at": "2026-05-13T16:53:31.307438",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "source": "Autoscout24 (alerte)",
@@ -172,11 +172,11 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant : à confirmer · ⚠️ Kilométrage élevé (137 000 km) · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-13T16:53:31.306984",
+    "score_date": "2026-05-13T17:04:20.064987",
     "id": "aab0614de51f",
-    "derniere_vue": "2026-05-13T16:53:31.307438",
+    "derniere_vue": "2026-05-13T17:04:20.065611",
     "premiere_vue": "2026-05-13T16:53:31.307438",
     "first_seen_at": "2026-05-13T16:53:31.307438",
-    "est_nouvelle": true
+    "est_nouvelle": false
   }
 ]
