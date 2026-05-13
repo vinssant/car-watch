@@ -339,6 +339,7 @@ def scraper(modele: dict = None) -> list:
 
     criteres   = modele.get("criteres", {}) if modele else {}
     modele_nom = modele.get("nom", "Break") if modele else "Break"
+    marque     = (criteres.get("marque") or "").lower()  # ex: "mercedes-benz", "bmw", "audi"
     annee_min  = criteres.get("annee_min", 2023)
     budget_max = criteres.get("budget_max", 42000)
     km_max     = criteres.get("km_max", 65000)
@@ -397,7 +398,7 @@ def scraper(modele: dict = None) -> list:
                 else:
                     nouvelles = _parser_generique(texte, source_nom, modele_nom)
 
-                # Filtrer selon critères
+                # Filtrer selon critères + marque
                 for a in nouvelles:
                     if a.get("prix") and a["prix"] > budget_max:
                         continue
@@ -405,6 +406,13 @@ def scraper(modele: dict = None) -> list:
                         continue
                     if a.get("annee") and a["annee"] < annee_min:
                         continue
+                    # Filtre marque : vérifier que le titre contient la marque attendue
+                    if marque:
+                        titre_lower = (a.get("titre") or "").lower()
+                        # Normaliser : mercedes-benz → mercedes
+                        marque_simple = marque.split("-")[0].split(" ")[0]
+                        if marque_simple and marque_simple not in titre_lower:
+                            continue
                     annonces.append(a)
 
             except Exception as e:
