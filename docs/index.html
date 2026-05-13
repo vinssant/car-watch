@@ -33,6 +33,9 @@ h1 small{display:block;font-size:.38em;font-weight:500;letter-spacing:.05em;colo
 .login-btn:hover{opacity:.85}
 .login-error{font-family:var(--mono);font-size:.7rem;color:var(--urgent);display:none}
 .logout-btn{font-family:var(--mono);font-size:.6rem;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:2px;padding:2px 8px;cursor:pointer;transition:all .15s}
+.token-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:2px;display:none}
+.token-ok{background:rgba(200,245,100,.1);color:var(--accent);border:1px solid rgba(200,245,100,.2)}
+.token-ko{background:rgba(255,77,109,.15);color:var(--urgent);border:1px solid rgba(255,77,109,.3);animation:flashGreen 1s ease-in-out infinite}
 .logout-btn:hover{color:var(--urgent);border-color:var(--urgent)}
 .model-tabs{display:flex;gap:.5rem;padding:.75rem 2rem;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
 .model-tab{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;padding:5px 14px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .15s}
@@ -145,7 +148,7 @@ footer span{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);lette
       <h1>C300e <em>Break</em><small>Mercedes-Benz · Veille acquisition</small></h1>
     </div>
     <div>
-      <div style="display:flex;align-items:center;gap:1rem"><div class="last-update"><span class="live-dot"></span><span id="last-update">Chargement...</span></div><button class="logout-btn" onclick="logout()">⏻ Déconnexion</button></div>
+      <div style="display:flex;align-items:center;gap:1rem"><div class="last-update"><span class="live-dot"></span><span id="last-update">Chargement...</span></div><span class="token-badge" id="token-badge"></span><button class="logout-btn" onclick="logout()">⏻ Déconnexion</button></div>
     </div>
   </div>
 </header>
@@ -407,6 +410,29 @@ function setModele(modele, btn){
   if(btn) btn.classList.add("active");
   init();
 }
+async function checkSystemStatus(){
+  try {
+    const r = await fetch(RAW+"/data/system_status.json?t="+Date.now());
+    if(!r.ok) return;
+    const s = await r.json();
+    const badge = document.getElementById("token-badge");
+    if(!badge) return;
+    const gmail = s.gmail_token || {};
+    const lastRun = s.last_run ? new Date(s.last_run).toLocaleString("fr-FR") : "?";
+    if(gmail.ok === false){
+      badge.className = "token-badge token-ko";
+      badge.textContent = "⚠️ Token Gmail KO";
+      badge.title = `Dernière vérif : ${lastRun}`;
+      badge.style.display = "inline-block";
+    } else if(gmail.ok === true){
+      badge.className = "token-badge token-ok";
+      badge.textContent = "✓ Gmail OK";
+      badge.title = `Dernière vérif : ${lastRun}`;
+      badge.style.display = "inline-block";
+    }
+  } catch(e) {}
+}
+
 async function init(){
   const[nA,nH,gA,gH,bA,bH,aA,aH,py,arch]=await Promise.all([
     fj(RAW+"/data/mercedes_c300e_nas/seen_ads.json"),

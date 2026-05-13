@@ -43,11 +43,52 @@ SCRAPERS_PAR_MODELE = {
 SOURCES_NAS_IDS = {"leparking", "autoscout24_nas", "autoscout24", "mercedes_certified", "spoticar", "lacentrale", "leboncoin"}
 
 
+def _verifier_token_gmail() -> dict:
+    """Vérifie les scopes du token Gmail et retourne un dict status."""
+    import json as _json
+    from pathlib import Path as _Path
+    token_file = _Path(__file__).parent / "token.json"
+    status = {"ok": False, "scopes": [], "checked_at": datetime.now().isoformat()}
+    try:
+        token = _json.loads(token_file.read_text(encoding="utf-8"))
+        scopes = token.get("scopes") or token.get("scope") or []
+        status["scopes"] = scopes
+        has_send    = any("gmail.send"     in s for s in scopes)
+        has_readonly = any("gmail.readonly" in s for s in scopes)
+        status["ok"] = has_send and has_readonly
+        status["has_send"]     = has_send
+        status["has_readonly"] = has_readonly
+    except Exception as e:
+        status["error"] = str(e)
+    return status
+
+
 def main():
     print(f"\n{'='*55}")
     print(f"  🏠 car-watch NAS — Scrapers IP résidentielle")
     print(f"  {datetime.now().strftime('%d/%m/%Y à %H:%M:%S')}")
     print(f"{'='*55}")
+
+    # Vérification token Gmail
+    import json as _json
+    from pathlib import Path as _Path
+    token_status = _verifier_token_gmail()
+    status_path  = _Path(__file__).parent / "data" / "system_status.json"
+    status_path.parent.mkdir(exist_ok=True)
+    _json.dump({"gmail_token": token_status, "last_run": datetime.now().isoformat()},
+               open(status_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+
+    if not token_status["ok"]:
+        msg = f"⚠️ Token Gmail KO — scopes manquants : {token_status.get('scopes', [])}"
+        print(f"  {msg}")
+        try:
+            envoyer_email(EMAIL_DESTINATAIRE,
+                "🚨 car-watch — Token Gmail KO",
+                f"<p>{msg}</p><p>Relancer <code>python3 oauth_setup_full.py</code> sur le NAS.</p>")
+        except Exception:
+            pass
+    else:
+        print(f"  ✅ Token Gmail OK (send + readonly)")
 
     modeles = charger_modeles_actifs()
     if not modeles:
@@ -102,6 +143,7 @@ def main():
     import subprocess
     try:
         subprocess.run(["git", "add",
+            "data/system_status.json",
             "data/mercedes_c300e_nas/seen_ads.json",
             "data/mercedes_c300e_nas/ads_history.json",
             "data/bmw_3series_nas/seen_ads.json",
