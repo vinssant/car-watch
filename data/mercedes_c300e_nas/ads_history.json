@@ -645,5 +645,14 @@
     "km": 60000,
     "titre": "C300e Break 2024 via alerte Aramisauto",
     "source": "Aramisauto (alerte)"
+  },
+  {
+    "id": "db66f80b4cf8",
+    "date": "2026-05-13T17:40:26.142943",
+    "event": "APPARITION",
+    "prix": 41799,
+    "km": 33361,
+    "titre": "Mercedes Classe C Break",
+    "source": "Aramisauto (alerte)"
   }
 ]
