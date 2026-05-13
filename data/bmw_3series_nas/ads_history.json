@@ -70,5 +70,23 @@
     "km": 38578,
     "titre": "BMW Série 3 PHEV Touring ? · 38 578 km",
     "source": "Autoscout24"
+  },
+  {
+    "id": "63f428bc0ecb",
+    "date": "2026-05-13T07:30:16.139144",
+    "event": "APPARITION",
+    "prix": 40990,
+    "km": 21700,
+    "titre": "BMW Série 3 PHEV Touring ? · 21 700 km",
+    "source": "Autoscout24"
+  },
+  {
+    "id": "574613f9d3bc",
+    "date": "2026-05-13T07:30:16.139144",
+    "event": "APPARITION",
+    "prix": 38490,
+    "km": 54501,
+    "titre": "BMW Série 3 PHEV Touring  2023 · 54 501 km",
+    "source": "Le Parking"
   }
 ]

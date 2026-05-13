@@ -492,5 +492,14 @@
     "km": 54611,
     "titre": "Mercedes-Benz C 300 e",
     "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "9337ca85ae7d",
+    "date": "2026-05-13T07:30:22.271733",
+    "event": "APPARITION",
+    "prix": 39490,
+    "km": 33300,
+    "titre": "Mercedes C300e Break ? · 33 300 km",
+    "source": "Autoscout24"
   }
 ]
