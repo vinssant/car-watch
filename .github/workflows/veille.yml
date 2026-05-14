@@ -36,6 +36,44 @@ jobs:
       - name: 📦 Dépendances
         run: pip install -r requirements.txt
 
+      - name: ⚙️ Créer config.py
+        env:
+          EMAIL_DESTINATAIRE: ${{ secrets.EMAIL_DESTINATAIRE }}
+        run: |
+          cat > config.py << PYEOF
+          EMAIL_DESTINATAIRE = "$EMAIL_DESTINATAIRE"
+
+          SCORING_DEFAULT = {
+              "annee"           : 0.20,
+              "kilometrage"     : 0.25,
+              "prix_vs_marche"  : 0.20,
+              "garantie"        : 0.15,
+              "equipements_cles": 0.10,
+              "fiabilite_source": 0.10,
+          }
+
+          SCORE_URGENT = 85
+          SCORE_ALERTE = 70
+          SCORE_INFO   = 50
+
+          SOURCES_FIABILITE = {
+              "mercedes_certified": 10,
+              "bmw_certified"     : 10,
+              "autohero"          : 8,
+              "aramisauto"        : 8,
+              "spoticar"          : 7,
+              "elite_auto"        : 7,
+              "capcar"            : 7,
+              "autouncle"         : 6,
+              "autoscout24"       : 6,
+              "autoscout24_nas"   : 6,
+              "lacentrale"        : 6,
+              "leparking"         : 6,
+              "leboncoin"         : 5,
+              "gmail_parser"      : 5,
+          }
+          PYEOF
+
       - name: 🧪 Mode test
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'test'
         env:
