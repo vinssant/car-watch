@@ -43,5 +43,14 @@
     "km": 137000,
     "titre": "Audi A3 Sportback ? via alerte AS24",
     "source": "Autoscout24 (alerte)"
+  },
+  {
+    "id": "cbb972476369",
+    "date": "2026-05-14T08:50:21.520591",
+    "event": "APPARITION",
+    "prix": null,
+    "km": 36500,
+    "titre": "Audi A3 Sportback 2024",
+    "source": "Leboncoin (alerte)"
   }
 ]

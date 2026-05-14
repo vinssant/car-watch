@@ -654,5 +654,14 @@
     "km": 33361,
     "titre": "Mercedes Classe C Break",
     "source": "Aramisauto (alerte)"
+  },
+  {
+    "id": "cbb972476369",
+    "date": "2026-05-14T08:50:33.620139",
+    "event": "APPARITION",
+    "prix": null,
+    "km": 36500,
+    "titre": "Mercedes C300e Break 2024",
+    "source": "Leboncoin (alerte)"
   }
 ]

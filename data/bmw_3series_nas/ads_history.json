@@ -187,5 +187,14 @@
     "km": 60000,
     "titre": "C300e Break 2024 via alerte Aramisauto",
     "source": "Aramisauto (alerte)"
+  },
+  {
+    "id": "cbb972476369",
+    "date": "2026-05-14T08:50:25.478264",
+    "event": "APPARITION",
+    "prix": null,
+    "km": 36500,
+    "titre": "BMW Série 3 PHEV Touring 2024",
+    "source": "Leboncoin (alerte)"
   }
 ]
