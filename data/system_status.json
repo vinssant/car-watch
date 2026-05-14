@@ -5,9 +5,9 @@
       "https://www.googleapis.com/auth/gmail.send",
       "https://www.googleapis.com/auth/gmail.readonly"
     ],
-    "checked_at": "2026-05-13T19:00:05.892205",
+    "checked_at": "2026-05-14T07:45:05.128080",
     "has_send": true,
     "has_readonly": true
   },
-  "last_run": "2026-05-13T19:00:05.900693"
+  "last_run": "2026-05-14T07:45:05.136406"
 }
