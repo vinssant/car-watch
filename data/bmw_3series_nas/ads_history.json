@@ -214,5 +214,13 @@
     "km": 36500,
     "titre": "BMW Série 3 PHEV Touring 2024",
     "source": "Leboncoin (alerte)"
+  },
+  {
+    "id": "63f428bc0ecb",
+    "date": "2026-05-14T19:00:17.980710",
+    "event": "DISPARITION",
+    "titre": "BMW Série 3 PHEV Touring ? · 21 700 km",
+    "prix": 40990,
+    "raison": "HTTP_404"
   }
 ]
