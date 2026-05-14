@@ -32,6 +32,7 @@ SENDERS_ALERTES = {
     "alerte@leboncoin.fr"                         : "Leboncoin",
     "noreply@leboncoin.fr"                        : "Leboncoin",
     "no-reply@leboncoin.fr"                       : "Leboncoin",
+    "no.reply@leboncoin.fr"                        : "Leboncoin",
     "no.reply@leboncoin.fr"                       : "Leboncoin",
     "info@news.leboncoin.fr"                      : "Leboncoin",
     # La Centrale — expéditeurs confirmés
