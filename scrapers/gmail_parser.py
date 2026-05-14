@@ -633,12 +633,14 @@ def scraper(modele: dict = None) -> list:
                         continue
                     if a.get("annee") and a["annee"] < annee_min:
                         continue
-                    # Filtre marque : vérifier que le titre contient la marque attendue
+                    # Filtre marque : vérifier que la marque est dans le titre OU dans le texte de l'email
                     if marque:
                         titre_lower = (a.get("titre") or "").lower()
-                        # Normaliser : mercedes-benz → mercedes
                         marque_simple = marque.split("-")[0].split(" ")[0]
-                        if marque_simple and marque_simple not in titre_lower:
+                        # Vérifier dans le titre ET dans le texte brut de l'email
+                        marque_in_titre = marque_simple and marque_simple in titre_lower
+                        marque_in_texte = marque_simple and marque_simple in texte.lower()
+                        if not marque_in_titre and not marque_in_texte:
                             continue
                     annonces.append(a)
 
