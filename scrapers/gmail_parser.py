@@ -103,46 +103,57 @@ def _decoder_body(message: dict) -> str:
 
 
 def _parser_leboncoin(texte: str, html: str, source: str, modele_nom: str = "Break") -> list:
-    """Parse un email d'alerte Leboncoin."""
+    """Parse un email d'alerte Leboncoin — cherche les URLs dans le HTML."""
     annonces = []
 
-    # Leboncoin envoie des annonces dans un format structuré
-    # Pattern : titre + prix + km + lien
-    blocs = re.split(r'(?=https?://www\.leboncoin\.fr/(?:ad/|vi/))', texte)
+    # Chercher les URLs dans le HTML (href) — plus fiable que le texte brut
+    urls = []
+    for m in re.finditer(r'href="(https?://www\.leboncoin\.fr/(?:ad/voitures/\d+|vi/\d+)[^"]*)"', html):
+        url = re.sub(r'[#?].*$', '', m.group(1))  # nettoyer tracking
+        if url not in urls:
+            urls.append(url)
+    # Fallback texte brut
+    if not urls:
+        for m in re.finditer(r'(https?://www\.leboncoin\.fr/(?:ad/voitures/\d+|vi/\d+))', texte):
+            if m.group(1) not in urls:
+                urls.append(m.group(1))
 
-    for bloc in blocs:
-        if "leboncoin.fr/ad/" not in bloc:
-            continue
+    for url in urls:
         try:
-            # URL
-            url_m = re.search(r'(https?://www\.leboncoin\.fr/(?:ad/voitures/\d+|vi/\d+))', bloc)
-            if not url_m:
-                continue
-            url = url_m.group(1)
+            bloc = texte  # chercher données dans tout le texte
 
             # Prix
             prix = None
-            prix_m = re.search(r'(\d[\d\s]+)\s*€', bloc)
-            if prix_m:
-                prix = int(re.sub(r"\s", "", prix_m.group(1)))
+            for ligne in texte.split('\n'):
+                if '€' not in ligne: continue
+                pm = re.search(r'(\d[\d ]+)\s*€', ligne) or re.search(r'€\s*(\d[\d ]+)', ligne)
+                if pm:
+                    try:
+                        v = int(re.sub(r'\s', '', pm.group(1)))
+                        if 500 < v < 150000:
+                            prix = v
+                            break
+                    except: pass
 
             # Km
             km = None
-            km_m = re.search(r'(\d[\d\s]+)\s*km', bloc, re.IGNORECASE)
+            km_m = re.search(r'(\d[\d\s]+)\s*km', texte, re.IGNORECASE)
             if km_m:
-                km = int(re.sub(r"\s", "", km_m.group(1)))
+                try: km = int(re.sub(r"\s", "", km_m.group(1)))
+                except: pass
 
             # Année
             annee = None
-            annee_m = re.search(r'\b(202[0-9])\b', bloc)
+            annee_m = re.search(r'\b(202[0-9])\b', texte)
             if annee_m:
-                annee = int(annee_m.group(1))
+                try: annee = int(annee_m.group(1))
+                except: pass
 
             # Toit
-            toit = "toit ouvrant" in bloc.lower() or "panoram" in bloc.lower()
+            toit = "toit ouvrant" in texte.lower() or "panoram" in texte.lower()
 
             # Titre
-            titre_m = re.search(r'(?:Mercedes|BMW)[^\n]{0,60}', bloc, re.IGNORECASE)
+            titre_m = re.search(r'(?:Mercedes|BMW|Audi)[^\n]{0,60}', texte, re.IGNORECASE)
             titre = titre_m.group(0).strip() if titre_m else f"{modele_nom} {annee or '?'}"
 
             annonces.append({
