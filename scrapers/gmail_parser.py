@@ -108,14 +108,14 @@ def _parser_leboncoin(texte: str, html: str, source: str, modele_nom: str = "Bre
 
     # Leboncoin envoie des annonces dans un format structuré
     # Pattern : titre + prix + km + lien
-    blocs = re.split(r'(?=https?://www\.leboncoin\.fr/ad/)', texte)
+    blocs = re.split(r'(?=https?://www\.leboncoin\.fr/(?:ad/|vi/))', texte)
 
     for bloc in blocs:
         if "leboncoin.fr/ad/" not in bloc:
             continue
         try:
             # URL
-            url_m = re.search(r'(https?://www\.leboncoin\.fr/ad/voitures/\d+)', bloc)
+            url_m = re.search(r'(https?://www\.leboncoin\.fr/(?:ad/voitures/\d+|vi/\d+))', bloc)
             if not url_m:
                 continue
             url = url_m.group(1)
