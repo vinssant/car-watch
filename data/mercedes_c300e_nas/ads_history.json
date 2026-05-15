@@ -680,5 +680,14 @@
     "km": 36500,
     "titre": "Mercedes C300e Break 2024",
     "source": "Leboncoin (alerte)"
+  },
+  {
+    "id": "68943d22dbda",
+    "date": "2026-05-15T07:45:31.744876",
+    "event": "APPARITION",
+    "prix": 38480,
+    "km": 45000,
+    "titre": "Mercedes C300e Break ? · 45 000 km",
+    "source": "Autoscout24"
   }
 ]
