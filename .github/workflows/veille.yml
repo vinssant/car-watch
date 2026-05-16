@@ -104,3 +104,4 @@ jobs:
           commit_message: "📊 car-watch — historique $(date +'%d/%m/%Y %H:%M')"
           file_pattern: "data/**/*.json"
           commit_author: "car-watch bot <bot@github.com>"
+          push_options: "--force"
