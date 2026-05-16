@@ -1,0 +1,41 @@
+[
+  {
+    "source": "Le Parking",
+    "source_id": "leparking",
+    "fiabilite_source": 6,
+    "titre": "Mercedes Classe A  2026 · 118 500 km",
+    "vendeur": "Pro Le Parking (ILE-DE-FRANCE)",
+    "url": "https://www.leparking.fr/voiture-occasion/mercedes-classe-a-9563429151.html",
+    "prix": 11690,
+    "annee": 2018,
+    "km": 118500,
+    "toit_ouvrant": null,
+    "garantie_mois": null,
+    "premiere_main": null,
+    "entretien_constructeur": null,
+    "region": "ILE-DE-FRANCE",
+    "is_pro": true,
+    "holder_id": "9563429151",
+    "modele_id": "mercedes_a",
+    "modele_nom": "Mercedes Classe A",
+    "score_total": 0.5,
+    "score_detail": {
+      "annee": 100.0,
+      "kilometrage": 50.0,
+      "prix_vs_marche": 10.0,
+      "garantie": 40.0,
+      "equipements_cles": 40.0,
+      "fiabilite_source": 60.0
+    },
+    "cote_reference": 9500,
+    "niveau_alerte": "FAIBLE",
+    "emoji_alerte": "⚪",
+    "recommandation": "⚠️ Toit ouvrant : à confirmer · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur",
+    "score_date": "2026-05-16T07:52:53.135835",
+    "id": "fbbe879958b5",
+    "derniere_vue": "2026-05-16T07:52:53.136159",
+    "premiere_vue": "2026-05-16T07:52:53.136159",
+    "first_seen_at": "2026-05-16T07:52:53.136159",
+    "est_nouvelle": true
+  }
+]
