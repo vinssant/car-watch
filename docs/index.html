@@ -165,6 +165,7 @@ footer span{font-family:var(--mono);font-size:.65rem;color:var(--text-dim);lette
   <button class="model-tab" onclick="setModele('mercedes_c300e',this)">🚗 Mercedes C300e</button>
   <button class="model-tab" onclick="setModele('bmw_3series',this)">🚙 BMW Série 3</button>
   <button class="model-tab" onclick="setModele('audi_a3',this)">🚘 Audi A3</button>
+  <button class="model-tab" onclick="setModele('mercedes_a',this)">🚖 Mercedes Classe A</button>
 </div>
 <div class="main">
   <div>
@@ -434,7 +435,7 @@ async function checkSystemStatus(){
 }
 
 async function init(){
-  const[nA,nH,gA,gH,bA,bH,aA,aH,py,arch]=await Promise.all([
+  const[nA,nH,gA,gH,bA,bH,aA,aH,mA,mAH,py,arch]=await Promise.all([
     fj(RAW+"/data/mercedes_c300e_nas/seen_ads.json"),
     fj(RAW+"/data/mercedes_c300e_nas/ads_history.json"),
     fj(RAW+"/data/mercedes_c300e/seen_ads.json"),
@@ -443,6 +444,8 @@ async function init(){
     fj(RAW+"/data/bmw_3series_nas/ads_history.json"),
     fj(RAW+"/data/audi_a3_nas/seen_ads.json"),
     fj(RAW+"/data/audi_a3_nas/ads_history.json"),
+    fj(RAW+"/data/mercedes_a_nas/seen_ads.json"),
+    fj(RAW+"/data/mercedes_a_nas/ads_history.json"),
     fetch(RAW+"/modeles/mercedes_c300e.py").then(r=>r.ok?r.text():"").catch(()=>""),
     fj(RAW+"/data/archived.json"),
   ]);
@@ -459,12 +462,14 @@ async function init(){
   // Taguer chaque source avec son modèle
   (Array.isArray(bA)?bA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_3series"; });
   (Array.isArray(aA)?aA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="audi_a3"; });
+  (Array.isArray(mA)?mA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_a"; });
+  (Array.isArray(mAH)?mAH:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_a"; });
   (Array.isArray(aH)?aH:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="audi_a3"; });
   (Array.isArray(bH)?bH:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="bmw_3series"; });
   (Array.isArray(nA)?nA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_c300e"; });
   (Array.isArray(gA)?gA:[]).forEach(a=>{ if(a&&!a.modele_id) a.modele_id="mercedes_c300e"; });
-  const allAdsRaw=[...(Array.isArray(nA)?nA:[]),...(Array.isArray(gA)?gA:[]),...(Array.isArray(bA)?bA:[]),...(Array.isArray(aA)?aA:[])];
-  const hist=[...(Array.isArray(nH)?nH:[]),...(Array.isArray(gH)?gH:[]),...(Array.isArray(bH)?bH:[]),...(Array.isArray(aH)?aH:[])];
+  const allAdsRaw=[...(Array.isArray(nA)?nA:[]),...(Array.isArray(gA)?gA:[]),...(Array.isArray(bA)?bA:[]),...(Array.isArray(aA)?aA:[]),...(Array.isArray(mA)?mA:[])];
+  const hist=[...(Array.isArray(nH)?nH:[]),...(Array.isArray(gH)?gH:[]),...(Array.isArray(bH)?bH:[]),...(Array.isArray(aH)?aH:[]),...(Array.isArray(mAH)?mAH:[])];
   const activeModele=window._activeModele||"all";
   const filteredRaw=activeModele==="all"?allAdsRaw:allAdsRaw.filter(a=>a&&(a.modele_id||"mercedes_c300e")===activeModele);
   const seen=new Set();

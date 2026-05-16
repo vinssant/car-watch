@@ -23,6 +23,7 @@ SEARCH_URLS = {
     "mercedes_c300e" : "https://www.autoscout24.fr/lst/mercedes-benz/c-300",
     "bmw_3series"    : "https://www.autoscout24.fr/lst/bmw/s%C3%A9rie-3-%28tous%29",
     "audi_a3"        : "https://www.autoscout24.fr/lst/audi/a3",
+    "mercedes_a"     : "https://www.autoscout24.fr/lst/mercedes-benz/a-klasse",
 }
 SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
@@ -74,7 +75,7 @@ def _normaliser(item: dict, modele_info: dict = None):
     # Filtrer motorisation selon le modèle
     fuel = (v.get("fuel") or "").lower()
     modele_id_local = (modele_info or {}).get("id", "mercedes_c300e")
-    if modele_id_local not in ("audi_a3",):
+    if modele_id_local not in ("audi_a3", "mercedes_a"):
         # Pour Mercedes et BMW : hybrides uniquement
         if "lectrique" not in fuel and "hybride" not in fuel and "phev" not in fuel:
             return None
@@ -173,6 +174,10 @@ def scraper(modele: dict = None) -> list:
                f"&ustate=N,U&cy=F&sort=price&desc=0&damaged_listing=exclude")
     elif modele_id == "audi_a3":
         url = (f"{base_url}?body=6&atype=C"
+               f"&fregfrom={annee_min}&priceto={budget_max}&kmto={km_max}"
+               f"&ustate=N,U&cy=F&sort=price&desc=0&damaged_listing=exclude")
+    elif modele_id == "mercedes_a":
+        url = (f"{base_url}?atype=C"
                f"&fregfrom={annee_min}&priceto={budget_max}&kmto={km_max}"
                f"&ustate=N,U&cy=F&sort=price&desc=0&damaged_listing=exclude")
     else:

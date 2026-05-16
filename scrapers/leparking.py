@@ -25,6 +25,7 @@ SEARCH_URLS = {
     "mercedes_c300e" : f"{BASE_URL}/voiture-occasion/mercedes-classe-c-break-c-300-e.html",
     "bmw_3series"    : f"{BASE_URL}/voiture-occasion/bmw-serie-3-break-330e.html",
     "audi_a3"        : f"{BASE_URL}/voiture-occasion/audi-a3-sportback.html",
+    "mercedes_a"     : f"{BASE_URL}/voiture-occasion/mercedes-classe-a.html",
 }
 SEARCH_URL = SEARCH_URLS["mercedes_c300e"]  # fallback
 
@@ -190,6 +191,7 @@ DETAIL_URL_PATTERNS = {
     "mercedes_c300e" : BASE_URL + "/voiture-occasion/mercedes-classe-c-break-c-300-e-{holder_id}.html",
     "bmw_3series"    : BASE_URL + "/voiture-occasion/bmw-serie-3-break-330e-{holder_id}.html",
     "audi_a3"        : BASE_URL + "/voiture-occasion/audi-a3-sportback-{holder_id}.html",
+    "mercedes_a"     : BASE_URL + "/voiture-occasion/mercedes-classe-a-{holder_id}.html",
 }
 
 def scraper(modele: dict = None) -> list:

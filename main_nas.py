@@ -38,6 +38,9 @@ SCRAPERS_PAR_MODELE = {
     "audi_a3": {
         # Pas de scraper dédié — Autoscout24 NAS + alertes email
     },
+    "mercedes_a": {
+        # Pas de scraper dédié — Autoscout24 NAS + alertes email
+    },
 }
 
 SOURCES_NAS_IDS = {"leparking", "autoscout24_nas", "autoscout24", "mercedes_certified", "spoticar", "lacentrale", "leboncoin"}
@@ -150,6 +153,8 @@ def main():
             "data/bmw_3series_nas/ads_history.json",
             "data/audi_a3_nas/seen_ads.json",
             "data/audi_a3_nas/ads_history.json",
+            "data/mercedes_a_nas/seen_ads.json",
+            "data/mercedes_a_nas/ads_history.json",
         ], check=True, capture_output=True)
         result = subprocess.run(["git", "diff", "--cached", "--quiet"], capture_output=True)
         if result.returncode != 0:  # il y a des changements
