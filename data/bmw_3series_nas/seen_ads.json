@@ -28,12 +28,12 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : kilométrage, année",
-    "score_date": "2026-05-16T07:45:31.109330",
+    "score_date": "2026-05-16T09:32:32.877703",
     "id": "621a2144caf3",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-16T07:45:31.166919",
     "first_seen_at": "2026-05-16T07:45:31.166919",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "source": "Leboncoin (alerte)",
@@ -64,12 +64,12 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : kilométrage, année",
-    "score_date": "2026-05-16T07:45:31.109397",
+    "score_date": "2026-05-16T09:32:32.877763",
     "id": "a34d52f53463",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-16T07:45:31.166919",
     "first_seen_at": "2026-05-16T07:45:31.166919",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "source": "Autoscout24",
@@ -100,9 +100,9 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Kilométrage excellent (18 822 km) · ⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-16T07:45:31.109207",
+    "score_date": "2026-05-16T09:32:32.877574",
     "id": "6531f21ad4e4",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-12T11:30:20.039791",
     "first_seen_at": "2026-05-12T11:30:20.039791",
     "est_nouvelle": false
@@ -136,9 +136,9 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Prix sous la cote — opportunité · ⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-16T07:45:31.108943",
+    "score_date": "2026-05-16T09:32:32.877281",
     "id": "77ffda143320",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-12T11:30:20.039791",
     "first_seen_at": "2026-05-12T11:30:20.039791",
     "est_nouvelle": false
@@ -172,9 +172,9 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Prix sous la cote — opportunité · ⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-16T07:45:31.109008",
+    "score_date": "2026-05-16T09:32:32.877346",
     "id": "1c96532211f6",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-12T11:30:20.039791",
     "first_seen_at": "2026-05-12T11:30:20.039791",
     "est_nouvelle": false
@@ -208,9 +208,9 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Toit ouvrant / panoramique confirmé · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-16T07:45:31.109072",
+    "score_date": "2026-05-16T09:32:32.877435",
     "id": "0c8bd1084c98",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-12T11:30:20.039791",
     "first_seen_at": "2026-05-12T11:30:20.039791",
     "est_nouvelle": false
@@ -244,9 +244,9 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-16T07:45:31.109135",
+    "score_date": "2026-05-16T09:32:32.877500",
     "id": "a75ed5e0969d",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-12T11:30:20.039791",
     "first_seen_at": "2026-05-12T11:30:20.039791",
     "est_nouvelle": false
@@ -280,9 +280,9 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Garantie : à vérifier auprès du vendeur · ℹ️ Données à compléter : année",
-    "score_date": "2026-05-16T07:45:31.109269",
+    "score_date": "2026-05-16T09:32:32.877638",
     "id": "714ee44a2494",
-    "derniere_vue": "2026-05-16T07:45:31.166919",
+    "derniere_vue": "2026-05-16T09:32:32.910694",
     "premiere_vue": "2026-05-12T11:30:20.039791",
     "first_seen_at": "2026-05-12T11:30:20.039791",
     "est_nouvelle": false
