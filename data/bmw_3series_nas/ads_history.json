@@ -222,5 +222,23 @@
     "titre": "BMW Série 3 PHEV Touring ? · 21 700 km",
     "prix": 40990,
     "raison": "HTTP_404"
+  },
+  {
+    "id": "621a2144caf3",
+    "date": "2026-05-16T07:45:31.166919",
+    "event": "APPARITION",
+    "prix": 38990,
+    "km": null,
+    "titre": "Bmw Série 3 Touring 320eA ...</span>",
+    "source": "Leboncoin (alerte)"
+  },
+  {
+    "id": "a34d52f53463",
+    "date": "2026-05-16T07:45:31.166919",
+    "event": "APPARITION",
+    "prix": 38990,
+    "km": null,
+    "titre": "Bmw Série 3 Touring 320eA ...</span>",
+    "source": "Leboncoin (alerte)"
   }
 ]
