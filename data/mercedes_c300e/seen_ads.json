@@ -9,7 +9,7 @@
     "prix": 39750,
     "annee": 2023,
     "km": 54611,
-    "toit_ouvrant": null,
+    "toit_ouvrant": true,
     "garantie_mois": null,
     "premiere_main": null,
     "entretien_constructeur": null,
@@ -24,19 +24,19 @@
       "kilometrage": 25.0,
       "prix_vs_marche": 10.0,
       "garantie": 40.0,
-      "equipements_cles": 40.0,
+      "equipements_cles": 76.0,
       "fiabilite_source": 60.0
     },
     "cote_reference": 34000,
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
-    "recommandation": "⚠️ Toit ouvrant : à confirmer · ⚠️ Kilométrage élevé (54 611 km) · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur",
-    "score_date": "2026-05-16T07:53:05.489612",
+    "recommandation": "✅ Toit ouvrant confirmé · ⚠️ Kilométrage élevé (54 611 km) · ⚠️ Prix surévalué — négocier · ⚠️ Garantie : à vérifier auprès du vendeur",
+    "score_date": "2026-05-17T08:10:16.595877",
     "id": "f17033f1866f",
-    "derniere_vue": "2026-05-16T07:53:05.489930",
+    "derniere_vue": "2026-05-17T08:10:16.596533",
     "premiere_vue": "2026-05-16T07:53:05.489930",
     "first_seen_at": "2026-05-16T07:53:05.489930",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "id": "0c72406e6b52",
