@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "source": "Le Parking",
+    "source_id": "leparking",
+    "fiabilite_source": 6,
+    "titre": "BMW Série 3 PHEV Touring  2026 · 58 741 km",
+    "vendeur": "Pro Le Parking (ILE-DE-FRANCE)",
+    "url": "https://www.leparking.fr/voiture-occasion/bmw-serie-3-break-330e-9543701882.html",
+    "prix": 25210,
+    "annee": 2026,
+    "km": 58741,
+    "toit_ouvrant": null,
+    "garantie_mois": null,
+    "premiere_main": null,
+    "entretien_constructeur": null,
+    "region": "ILE-DE-FRANCE",
+    "is_pro": true,
+    "holder_id": "9543701882",
+    "modele_id": "bmw_3series",
+    "modele_nom": "BMW Série 3 PHEV Touring",
+    "score_total": 0.6,
+    "score_detail": {
+      "annee": 100.0,
+      "kilometrage": 25.0,
+      "prix_vs_marche": 100.0,
+      "garantie": 40.0,
+      "equipements_cles": 40.0,
+      "fiabilite_source": 60.0
+    },
+    "cote_reference": 45000,
+    "niveau_alerte": "FAIBLE",
+    "emoji_alerte": "⚪",
+    "recommandation": "✅ Prix sous la cote — opportunité · ⚠️ Toit ouvrant / panoramique : à confirmer · ⚠️ Kilométrage élevé (58 741 km) · ⚠️ Garantie : à vérifier auprès du vendeur",
+    "score_date": "2026-05-20T08:53:15.931446",
+    "id": "4bb5604cc1a4",
+    "derniere_vue": "2026-05-20T08:53:15.931652",
+    "premiere_vue": "2026-05-20T08:53:15.931652",
+    "first_seen_at": "2026-05-20T08:53:15.931652",
+    "est_nouvelle": true
+  }
+]
