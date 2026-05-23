@@ -25,5 +25,14 @@
     "km": 134000,
     "titre": "Mercedes Classe A  2026 · 134 000 km",
     "source": "Le Parking"
+  },
+  {
+    "id": "fcc4d0309cfd",
+    "date": "2026-05-23T08:05:57.345913",
+    "event": "APPARITION",
+    "prix": 6200,
+    "km": 90000,
+    "titre": "Mercedes Classe A  2026 · 90 000 km",
+    "source": "Le Parking"
   }
 ]
