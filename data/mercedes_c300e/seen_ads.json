@@ -18,7 +18,7 @@
     "premiere_main": null,
     "carrosserie": "Break",
     "motorisation": "Hybride rechargeable Essence",
-    "scraped_at": "2026-06-04T09:43:19.326137",
+    "scraped_at": "2026-06-05T09:30:12.484067",
     "modele_id": "mercedes_c300e",
     "modele_nom": "Mercedes C300e Break",
     "score_total": 0.6,
@@ -34,11 +34,11 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Garantie solide (24 mois) · ✅ Toit ouvrant confirmé · ✅ Entretien MB confirmé · ⚠️ Kilométrage élevé (56 417 km) · ⚠️ Prix surévalué — négocier",
-    "score_date": "2026-06-04T09:43:25.375294",
-    "derniere_vue": "2026-06-04T09:43:25.375718",
+    "score_date": "2026-06-05T09:30:19.476355",
+    "derniere_vue": "2026-06-05T09:30:19.476781",
     "premiere_vue": "2026-06-04T09:43:25.375718",
     "first_seen_at": "2026-06-04T09:43:25.375718",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "id": "182cb9e1662a",
@@ -59,7 +59,7 @@
     "premiere_main": null,
     "carrosserie": "Break",
     "motorisation": "Hybride rechargeable Essence",
-    "scraped_at": "2026-06-04T09:43:19.326149",
+    "scraped_at": "2026-06-05T09:30:12.484080",
     "modele_id": "mercedes_c300e",
     "modele_nom": "Mercedes C300e Break",
     "score_total": 0.6,
@@ -75,8 +75,8 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Garantie solide (24 mois) · ✅ Toit ouvrant confirmé · ✅ Entretien MB confirmé · ⚠️ Kilométrage élevé (55 613 km) · ⚠️ Prix surévalué — négocier",
-    "score_date": "2026-06-04T09:43:25.375330",
-    "derniere_vue": "2026-06-04T09:43:25.375718",
+    "score_date": "2026-06-05T09:30:19.476383",
+    "derniere_vue": "2026-06-05T09:30:19.476781",
     "premiere_vue": "2026-05-31T08:34:29.509230",
     "first_seen_at": "2026-05-31T08:34:29.509230",
     "est_nouvelle": false
