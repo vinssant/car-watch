@@ -7,7 +7,7 @@
     "vendeur": "Pro Le Parking (ILE-DE-FRANCE)",
     "url": "https://www.leparking.fr/voiture-occasion/audi-a3-sportback-9611571843.html",
     "prix": 9800,
-    "annee": 2023,
+    "annee": 2022,
     "km": 99388,
     "toit_ouvrant": true,
     "garantie_mois": null,
@@ -31,11 +31,11 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Prix sous la cote — opportunité · ✅ Toit ouvrant confirmé · ⚠️ Garantie : à vérifier auprès du vendeur",
-    "score_date": "2026-06-24T08:52:21.161049",
+    "score_date": "2026-06-25T08:46:24.253704",
     "id": "fbcd810e50f9",
-    "derniere_vue": "2026-06-24T08:52:21.161252",
+    "derniere_vue": "2026-06-25T08:46:24.253928",
     "premiere_vue": "2026-06-24T08:52:21.161252",
     "first_seen_at": "2026-06-24T08:52:21.161252",
-    "est_nouvelle": true
+    "est_nouvelle": false
   }
 ]

@@ -412,5 +412,13 @@
     "km": 57237,
     "titre": "Mercedes-Benz C 300 e Hybrid AMG Line",
     "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "413434caf336",
+    "date": "2026-06-25T08:46:55.738909",
+    "event": "BAISSE_PRIX",
+    "ancien": 39990,
+    "nouveau": 38990,
+    "diff_pct": -2.5
   }
 ]
