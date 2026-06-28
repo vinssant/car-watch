@@ -420,5 +420,13 @@
     "ancien": 39990,
     "nouveau": 38990,
     "diff_pct": -2.5
+  },
+  {
+    "id": "ec2e5dc2203a",
+    "date": "2026-06-28T08:40:21.856754",
+    "event": "BAISSE_PRIX",
+    "ancien": 41450,
+    "nouveau": 40990,
+    "diff_pct": -1.1
   }
 ]
