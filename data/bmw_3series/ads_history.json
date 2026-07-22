@@ -61,5 +61,13 @@
     "km": 43986,
     "titre": "BMW Série 3 PHEV Touring  2026 · 43 986 km",
     "source": "Le Parking"
+  },
+  {
+    "id": "ee7e98d05cd9",
+    "date": "2026-07-22T08:07:07.010401",
+    "event": "BAISSE_PRIX",
+    "ancien": 34900,
+    "nouveau": 34350,
+    "diff_pct": -1.6
   }
 ]
