@@ -113,5 +113,14 @@
     "ancien": 11500,
     "nouveau": 10920,
     "diff_pct": -5.0
+  },
+  {
+    "id": "e70503a8797c",
+    "date": "2026-07-30T08:06:41.324892",
+    "event": "APPARITION",
+    "prix": 11110,
+    "km": 116273,
+    "titre": "Mercedes Classe A  2026 · 116 273 km",
+    "source": "Le Parking"
   }
 ]
