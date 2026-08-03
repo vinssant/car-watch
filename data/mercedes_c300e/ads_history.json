@@ -549,5 +549,14 @@
     "km": 27547,
     "titre": "Mercedes-Benz C 300 e Hybrid AMG Line",
     "source": "Mercedes-Benz Certified"
+  },
+  {
+    "id": "8c3155f96795",
+    "date": "2026-08-03T09:19:39.212880",
+    "event": "APPARITION",
+    "prix": 35050,
+    "km": 55251,
+    "titre": "Mercedes C300e Break  2026 · 55 251 km",
+    "source": "Le Parking"
   }
 ]
