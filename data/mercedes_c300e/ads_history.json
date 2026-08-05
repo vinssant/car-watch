@@ -558,5 +558,13 @@
     "km": 55251,
     "titre": "Mercedes C300e Break  2026 · 55 251 km",
     "source": "Le Parking"
+  },
+  {
+    "id": "3bb134540f5d",
+    "date": "2026-08-05T08:15:43.716892",
+    "event": "BAISSE_PRIX",
+    "ancien": 38990,
+    "nouveau": 38250,
+    "diff_pct": -1.9
   }
 ]
