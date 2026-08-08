@@ -7,7 +7,7 @@
     "vendeur": "Pro Le Parking (ILE-DE-FRANCE)",
     "url": "https://www.leparking.fr/voiture-occasion/mercedes-classe-a-9642365485.html",
     "prix": 10000,
-    "annee": 2023,
+    "annee": 2022,
     "km": 120000,
     "toit_ouvrant": true,
     "garantie_mois": null,
@@ -31,12 +31,12 @@
     "niveau_alerte": "FAIBLE",
     "emoji_alerte": "⚪",
     "recommandation": "✅ Prix sous la cote — opportunité · ✅ Toit ouvrant confirmé · ⚠️ Garantie : à vérifier auprès du vendeur",
-    "score_date": "2026-08-07T06:59:12.444494",
+    "score_date": "2026-08-08T06:33:41.076044",
     "id": "23c511c5585a",
-    "derniere_vue": "2026-08-07T06:59:12.444850",
+    "derniere_vue": "2026-08-08T06:33:41.076432",
     "premiere_vue": "2026-08-07T06:59:12.444850",
     "first_seen_at": "2026-08-07T06:59:12.444850",
-    "est_nouvelle": true
+    "est_nouvelle": false
   },
   {
     "source": "Le Parking",
