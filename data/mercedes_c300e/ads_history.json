@@ -601,5 +601,13 @@
     "ancien": 39490,
     "nouveau": 38990,
     "diff_pct": -1.3
+  },
+  {
+    "id": "a06be7c8d966",
+    "date": "2026-08-12T07:07:20.874959",
+    "event": "BAISSE_PRIX",
+    "ancien": 41489,
+    "nouveau": 40999,
+    "diff_pct": -1.2
   }
 ]
