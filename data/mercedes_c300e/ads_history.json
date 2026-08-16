@@ -609,5 +609,14 @@
     "ancien": 41489,
     "nouveau": 40999,
     "diff_pct": -1.2
+  },
+  {
+    "id": "f36ea4b4395d",
+    "date": "2026-08-16T06:22:08.406129",
+    "event": "APPARITION",
+    "prix": 41377,
+    "km": 33663,
+    "titre": "Mercedes-Benz C 300 e",
+    "source": "Mercedes-Benz Certified"
   }
 ]
