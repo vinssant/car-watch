@@ -139,5 +139,14 @@
     "ancien": 37400,
     "nouveau": 37330,
     "diff_pct": -0.2
+  },
+  {
+    "id": "468674000843",
+    "date": "2026-09-09T10:21:00.829659",
+    "event": "APPARITION",
+    "prix": 41370,
+    "km": 57654,
+    "titre": "BMW Série 3 PHEV Touring  2026 · 57 654 km",
+    "source": "Le Parking"
   }
 ]
