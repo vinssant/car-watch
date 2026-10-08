@@ -25,5 +25,13 @@
     "km": 144000,
     "titre": "Audi A3 Sportback  2026 · 144 000 km",
     "source": "Le Parking"
+  },
+  {
+    "id": "fbcd810e50f9",
+    "date": "2026-10-08T12:26:19.355947",
+    "event": "BAISSE_PRIX",
+    "ancien": 9800,
+    "nouveau": 9400,
+    "diff_pct": -4.1
   }
 ]
